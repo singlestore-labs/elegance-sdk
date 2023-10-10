@@ -6,8 +6,9 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist/**/*",
-    "server/dist/**/*"
+    "./dist/**/*",
+    "./server/dist/**/*",
+    "./types/dist/**/*"
   ],
   "exports": {
     ".": {
