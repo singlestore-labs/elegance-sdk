@@ -1,0 +1,63 @@
+{
+  "name": "@singlestore/elegance-sdk",
+  "version": "0.0.1",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "server/dist/**/*"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "module": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./server/dist/index.d.ts",
+      "import": "./server/dist/index.mjs",
+      "module": "./server/dist/index.mjs",
+      "require": "./server/dist/index.js"
+    },
+    "./types": {
+      "types": "./types/dist/index.d.ts",
+      "import": "./types/dist/index.mjs",
+      "module": "./types/dist/index.mjs",
+      "require": "./types/dist/index.js"
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist server types && tsup",
+    "dev": "npm run build -- --watch",
+    "check-types": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.5",
+    "tsup": "^6.1.3",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "bson-objectid": "^2.0.4",
+    "csv-parser": "3.0.0",
+    "mongodb": "^5.8.0",
+    "mysql2": "^3.6.0",
+    "openai": "^4.4.0",
+    "pdf-parse": "1.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://singlestore.com",
+  "keywords": [
+    "singlestore",
+    "database",
+    "react",
+    "openai"
+  ]
+}
