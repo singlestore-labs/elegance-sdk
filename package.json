@@ -1,4 +1,5 @@
 {
+  "license": "Apache-2.0",
   "private": true,
   "scripts": {
     "build": "dotenv -- turbo build",
@@ -19,5 +20,13 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "homepage": "https://github.com/singlestore-labs/elegance-sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/singlestore-labs/elegance-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/singlestore-labs/elegance-sdk/issues"
+  }
 }

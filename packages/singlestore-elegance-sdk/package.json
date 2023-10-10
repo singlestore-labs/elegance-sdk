@@ -1,6 +1,7 @@
 {
   "name": "@singlestore/elegance-sdk",
   "version": "0.0.1",
+  "license": "Apache-2.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -28,7 +29,6 @@
       "require": "./types/dist/index.js"
     }
   },
-  "license": "MIT",
   "scripts": {
     "build": "rm -rf dist server types && tsup",
     "dev": "npm run build -- --watch",
@@ -53,7 +53,14 @@
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://singlestore.com",
+  "homepage": "https://github.com/singlestore-labs/elegance-sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/singlestore-labs/elegance-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/singlestore-labs/elegance-sdk/issues"
+  },
   "keywords": [
     "singlestore",
     "database",
