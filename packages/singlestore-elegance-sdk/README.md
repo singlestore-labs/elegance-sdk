@@ -120,6 +120,13 @@ export function ExampleComponent() {
 
 8. Run your client
 
+## Templates
+
+You can find templates using the Elegance SDK here:
+
+- [Next.js Template](https://github.com/singlestore-labs/elegance-sdk-template-next)
+- [Express.js Template](https://github.com/singlestore-labs/elegance-sdk-template-express)
+
 ## API
 
 #### createEleganceServerClient
