@@ -127,6 +127,12 @@ You can find templates using the Elegance SDK here:
 - [Next.js Template](https://github.com/singlestore-labs/elegance-sdk-template-next)
 - [Express.js Template](https://github.com/singlestore-labs/elegance-sdk-template-express)
 
+## Example apps
+
+You can find example apps using the Elegance SDK here:
+
+- [Books Chat](https://github.com/singlestore-labs/elegance-sdk-app-books-chat)
+
 ## API
 
 #### createEleganceServerClient
