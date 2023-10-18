@@ -456,6 +456,21 @@ Converts an embedding into a buffer that is then inserted into the database.
 
 **Returns:** `Buffer`
 
+#### eleganceServerClient.openai.helpers.textToEmbeddings
+
+Converts text into embeddings by splitting the text into chunks.
+
+**Parameters:**
+
+- `text: string`
+- ```tsx
+  options?: {
+    chunkSize?: number;
+    textField?: string; // Field name in which to save a chunk text
+    embeddingField?: string; // Field name in which to save an embedding
+  }
+  ```
+
 #### eleganceServerClient.openai.helpers.dataURLtoEmbeddings
 
 Converts a DataURL (csv, pdf) into an embedding by splitting the text into chunks.
