@@ -46,6 +46,21 @@ export function createOpenAI(config?: OpenAIConfig) {
     return Buffer.from(new Uint8Array(float32.buffer));
   }
 
+  async function textToEmbeddings(
+    text: string,
+    options: { chunkSize?: number; textField?: string; embeddingField?: string } = {}
+  ) {
+    const { chunkSize = 1000, textField = "text", embeddingField = "embedding" } = options;
+    const source = splitText(text, chunkSize);
+    const embeddings = await createEmbedding(source);
+    const embeddingsWithText = embeddings.map((embedding, i) => ({
+      [textField]: source[i],
+      [embeddingField]: embedding
+    }));
+
+    return embeddingsWithText;
+  }
+
   async function dataURLtoEmbeddings(
     dataURL: string,
     options: { chunkSize?: number; textField?: string; embeddingField?: string } = {}
@@ -84,6 +99,6 @@ export function createOpenAI(config?: OpenAIConfig) {
   }
 
   return Object.assign(openai, {
-    helpers: { createEmbedding, embeddingToBuffer, dataURLtoEmbeddings, createChatCompletion }
+    helpers: { createEmbedding, embeddingToBuffer, textToEmbeddings, dataURLtoEmbeddings, createChatCompletion }
   });
 }
