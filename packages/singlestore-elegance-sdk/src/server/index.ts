@@ -1,4 +1,5 @@
-import type { ConnectionTypes, ConnectionConfigsMap, OpenAIConfig } from "../shared/types";
+import type { ConnectionTypes } from "../shared/types";
+import type { EleganceServerClientConfig } from "./types";
 import { createControllers } from "./controllers";
 import { createConnection, createOpenAI } from "./utils";
 
@@ -11,13 +12,10 @@ export function createRouteHandler<T extends Record<string, any>>(controllers: T
   };
 }
 
-export function createEleganceServerClient<T extends ConnectionTypes>(
-  type: T,
-  config: {
-    connection: ConnectionConfigsMap[T];
-    openai?: OpenAIConfig;
-  }
-) {
+export function createEleganceServerClient<
+  T extends ConnectionTypes,
+  C extends EleganceServerClientConfig<T> = EleganceServerClientConfig<T>
+>(type: T, config: C) {
   const connection = createConnection(type, config.connection);
   const openai = createOpenAI(config.openai);
   const controllers = createControllers(connection, openai);
