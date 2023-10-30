@@ -8,7 +8,7 @@ import { CreateChatCompletionBody, OpenAIConfig, OpenAIRequestOptions } from "..
 export type OpenAI = ReturnType<typeof createOpenAI>;
 
 export function createOpenAI(config?: OpenAIConfig) {
-  if (!config) return undefined;
+  if (!config?.apiKey) return undefined;
 
   const openai = new _OpenAI(config);
 
