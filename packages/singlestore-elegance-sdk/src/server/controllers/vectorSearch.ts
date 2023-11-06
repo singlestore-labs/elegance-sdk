@@ -1,9 +1,9 @@
 import type { Connection, VectorSearchResult, VectorSearchBody, Pipeline } from "../../shared/types";
-import type { OpenAI } from "../utils";
+import type { AI } from "../utils";
 import { handleError } from "../../shared/helpers";
 import { createController, getTablePath } from "../utils";
 
-export const createVectorSearchController = <T extends Connection>(connection: T, openai: OpenAI) => {
+export const createVectorSearchController = <T extends Connection>(connection: T, ai: AI) => {
   return createController({
     name: "vectorSearch",
     method: "POST",
@@ -11,15 +11,13 @@ export const createVectorSearchController = <T extends Connection>(connection: T
       body: VectorSearchBody[T["type"]]
     ): Promise<R> => {
       try {
-        if (!openai) throw new Error("OpenAI client is undefined");
-
         let result: any = undefined;
         const { embeddingField, query, limit } = body;
-        const queryEmbedding = (await openai.helpers.createEmbedding(query))[0];
+        const queryEmbedding = (await ai.createEmbedding(query))[0];
 
         if (connection.type === "kai") {
           const { collection } = body as VectorSearchBody["kai"];
-          const queryBuffer = openai.helpers.embeddingToBuffer(queryEmbedding);
+          const queryBuffer = ai.embeddingToBuffer(queryEmbedding);
 
           const pipeline: Pipeline = [
             { $addFields: { similarity: { $dotProduct: [`$${embeddingField}`, queryBuffer] } } },

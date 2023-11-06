@@ -3,11 +3,11 @@ import type {
   CreateAndInsertFileEmbeddingsBody,
   CreateAndInsertFileEmbeddingsResult
 } from "../../shared/types";
-import type { OpenAI } from "../utils";
+import type { AI } from "../utils";
 import { handleError } from "../../shared/helpers";
 import { createController, getTablePath } from "../utils";
 
-export const createCreateAndInsertFileEmbeddingsController = <T extends Connection>(connection: T, openai: OpenAI) => {
+export const createCreateAndInsertFileEmbeddingsController = <T extends Connection>(connection: T, ai: AI) => {
   return createController({
     name: "createAndInsertFileEmbeddings",
     method: "POST",
@@ -15,10 +15,8 @@ export const createCreateAndInsertFileEmbeddingsController = <T extends Connecti
       body: CreateAndInsertFileEmbeddingsBody[T["type"]]
     ): Promise<CreateAndInsertFileEmbeddingsResult> => {
       try {
-        if (!openai) throw new Error("OpenAI client is undefined");
-
         const { dataURL, chunkSize = 1000, textField = "text", embeddingField = "embedding" } = body;
-        const fileEmbeddings = await openai?.helpers.dataURLtoEmbeddings(dataURL, {
+        const fileEmbeddings = await ai.dataURLtoEmbeddings(dataURL, {
           chunkSize,
           textField,
           embeddingField
@@ -34,7 +32,7 @@ export const createCreateAndInsertFileEmbeddingsController = <T extends Connecti
 
           const fileBufferEmbeddings = fileEmbeddings.map(i => ({
             [textField]: i[textField as keyof typeof i],
-            [embeddingField]: openai?.helpers.embeddingToBuffer(i[embeddingField as keyof typeof i] as number[])
+            [embeddingField]: ai.embeddingToBuffer(i[embeddingField as keyof typeof i] as number[])
           }));
 
           await connection.db.collection(collection).insertMany(fileBufferEmbeddings);

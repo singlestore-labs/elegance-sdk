@@ -145,7 +145,13 @@ Creates an EleganceServerClient instance for a server.
 - ```tsx
   config: {
     connection: KaiConnectionConfig | MySQLConnectionConfig;
-    openai: OpenAIConfig;
+    ai?: {
+      openai?: OpenAIConfig;
+      customizers?: {
+        createEmbedding?: (input: EmbeddingInput) => Promise<number[][]>;
+        createChatCompletion?: (body: CreateChatCompletionBody) => Promise<string | null>;
+      } // You can use your own functions to create an embedding or a chat completion.
+    };
   }
   ```
 
@@ -153,7 +159,7 @@ Creates an EleganceServerClient instance for a server.
 
 #### eleganceServerClient
 
-Server client that includes a database connection, controllers and OpenAI client. It's used on the server to handle requests from the client and execute logic.
+Server client that includes a database connection, controllers and AI client. It's used on the server to handle requests from the client and execute logic.
 
 #### eleganceServerClient.connection
 
@@ -441,13 +447,13 @@ body: {
 
 **Returns:** `Array<{ text: string; embedding: number[]; }>`
 
-#### eleganceServerClient.openai
+#### eleganceServerClient.ai.openai
 
-Default OpenAI client + helpers
+Default OpenAI client
 
-#### eleganceServerClient.openai.helpers.createEmbedding
+#### eleganceServerClient.ai.createEmbedding
 
-Creates embedding using the OpenAI Embeddings API
+Creates embedding
 
 **Parameters:**
 
@@ -455,7 +461,7 @@ Creates embedding using the OpenAI Embeddings API
 
 **Returns:** `Array<number>`
 
-#### eleganceServerClient.openai.helpers.embeddingToBuffer
+#### eleganceServerClient.ai.embeddingToBuffer
 
 Converts an embedding into a buffer that is then inserted into the database.
 
@@ -465,7 +471,7 @@ Converts an embedding into a buffer that is then inserted into the database.
 
 **Returns:** `Buffer`
 
-#### eleganceServerClient.openai.helpers.textToEmbeddings
+#### eleganceServerClient.ai.textToEmbeddings
 
 Converts text into embeddings by splitting the text into chunks.
 
@@ -480,7 +486,7 @@ Converts text into embeddings by splitting the text into chunks.
   }
   ```
 
-#### eleganceServerClient.openai.helpers.dataURLtoEmbeddings
+#### eleganceServerClient.ai.dataURLtoEmbeddings
 
 Converts a DataURL (csv, pdf) into an embedding by splitting the text into chunks.
 
@@ -497,13 +503,25 @@ Converts a DataURL (csv, pdf) into an embedding by splitting the text into chunk
 
 **Returns:** `Array<{ text: string; embedding: number[] }>`
 
-#### eleganceServerClient.openai.helpers.createChatCompletion
+#### eleganceServerClient.ai.createChatCompletion
 
-Generates a chat completion using the OpenAI ChatCompletion API.
+Generates a chat completion.
 
 **Parameters:**
 
-- `options: ChatCompletionCreateParamsBase`
+- ```tsx
+  body: {
+    prompt?: string;
+    promptEmbedding?: Array<number>;
+    model?: string;
+    temperature?: number;
+    searchResults?: ({ similarity: number } & Record<string, any>)[];
+    messages?: Array<{role: string; content: string}>;
+    maxTokens?: number;
+    maxContextLength?: number;
+    minSimilarity?: number;
+  }
+  ```
 
 **Returns:** `string`
 

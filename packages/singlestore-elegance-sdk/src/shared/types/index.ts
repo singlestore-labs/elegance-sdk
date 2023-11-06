@@ -35,8 +35,17 @@ export type {
   MySQLPool
 };
 
-export type OpenAIRequestOptions = Omit<_OpenAIRequestOptions, "stream">;
-export type CreateChatCompletionBody = Omit<Partial<ChatCompletionCreateParamsNonStreaming>, "stream">;
+export type CreateChatCompletionBody = {
+  prompt?: string;
+  promptEmbedding?: number[];
+  model?: string;
+  temperature?: number;
+  searchResults?: ({ similarity: number } & Record<string, any>)[];
+  messages?: ChatCompletionCreateParamsNonStreaming["messages"];
+  maxTokens?: number;
+  maxContextLength?: number;
+  minSimilarity?: number;
+};
 
 export type DefaultError = { status?: number; message: string };
 
@@ -78,6 +87,8 @@ export type Request = (...args: any[]) => Promise<any>;
 export type Pipeline = Record<any, any>[];
 
 export type Filter = { [K: string]: any };
+
+export type EmbeddingInput = string | object | string[] | object[];
 
 export type MySQLWhere = string;
 export type MySQLSet = string;
@@ -170,18 +181,16 @@ export type ChatCompletionResult = {
   content: string;
   context: string;
 };
-export type ChatCompletionBody = WithConnections<{
-  prompt: string;
-  model?: string;
-  textField?: string;
-  embeddingField?: string;
-  minSimilarity?: number;
-  systemRole?: string;
-  messages?: CreateChatCompletionBody["messages"];
-  maxTokens?: CreateChatCompletionBody["max_tokens"];
-  maxContextLength?: number;
-  temperature?: CreateChatCompletionBody["temperature"];
-}>;
+export type ChatCompletionBody = WithConnections<
+  {
+    textField?: string;
+    embeddingField?: string;
+    systemRole?: string;
+  } & Pick<
+    CreateChatCompletionBody,
+    "prompt" | "model" | "messages" | "minSimilarity" | "maxTokens" | "maxContextLength" | "temperature"
+  >
+>;
 
 export type CreateFileEmbeddingsResult = { text: string; embedding: number[] }[];
 export type CreateFileEmbeddingsBody = {
