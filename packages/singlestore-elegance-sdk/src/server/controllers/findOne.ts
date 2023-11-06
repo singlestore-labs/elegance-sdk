@@ -1,6 +1,6 @@
 import type { Connection, FindOneResult, FindOneBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
-import { createController } from "../utils";
+import { createController, getTablePath } from "../utils";
 
 export const createFindOneController = <T extends Connection>(connection: T) => {
   return createController({
@@ -14,7 +14,8 @@ export const createFindOneController = <T extends Connection>(connection: T) => 
           const { collection, filter = {}, options } = body as FindOneBody["kai"];
           result = await connection.db.collection(collection).findOne(filter, options);
         } else {
-          const { table, columns, where } = body as FindOneBody["mysql"];
+          const { db, table, columns, where } = body as FindOneBody["mysql"];
+          const tablePath = getTablePath(connection, table, db);
           let query = `SELECT`;
 
           if (columns) {
@@ -23,7 +24,7 @@ export const createFindOneController = <T extends Connection>(connection: T) => 
             query += " *";
           }
 
-          query += ` FROM ${table}`;
+          query += ` FROM ${tablePath}`;
 
           if (where) query += ` WHERE ${where}`;
           query += ` LIMIT 1`;

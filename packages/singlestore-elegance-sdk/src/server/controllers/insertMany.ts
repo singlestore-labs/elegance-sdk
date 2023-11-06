@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import type { Connection, InsertManyResult, InsertManyBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
-import { createController, toInsertValuesQuery } from "../utils";
+import { createController, getTablePath, toInsertValuesQuery } from "../utils";
 
 export const createInsertManyController = <T extends Connection>(connection: T) => {
   return createController({
@@ -18,9 +18,10 @@ export const createInsertManyController = <T extends Connection>(connection: T) 
           const inserted = await connection.db.collection(collection).insertMany(values, options);
           result = values.map((value, i) => ({ id: inserted.insertedIds[i].toString(), ...value }));
         } else {
-          const { table, values } = body as InsertManyBody["mysql"];
+          const { db, table, values } = body as InsertManyBody["mysql"];
+          const tablePath = getTablePath(connection, table, db);
           if (generateId) for (const value of values) value.id = new ObjectId().toString();
-          const { query, valuesToInsert } = toInsertValuesQuery(table, values);
+          const { query, valuesToInsert } = toInsertValuesQuery(tablePath, values);
           await connection.promise().query(query, [valuesToInsert]);
           result = values;
         }

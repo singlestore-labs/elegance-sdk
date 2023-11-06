@@ -5,7 +5,7 @@ import type {
 } from "../../shared/types";
 import type { OpenAI } from "../utils";
 import { handleError } from "../../shared/helpers";
-import { createController } from "../utils";
+import { createController, getTablePath } from "../utils";
 
 export const createCreateAndInsertFileEmbeddingsController = <T extends Connection>(connection: T, openai: OpenAI) => {
   return createController({
@@ -39,21 +39,22 @@ export const createCreateAndInsertFileEmbeddingsController = <T extends Connecti
 
           await connection.db.collection(collection).insertMany(fileBufferEmbeddings);
         } else {
-          const { table } = body as CreateAndInsertFileEmbeddingsBody["mysql"];
+          const { db, table } = body as CreateAndInsertFileEmbeddingsBody["mysql"];
+          const tablePath = getTablePath(connection, table, db);
 
-          await connection.promise().execute(`DROP TABLE IF EXISTS ${table}`);
-          await connection.promise().execute(`CREATE TABLE IF NOT EXISTS ${table} (
+          await connection.promise().execute(`DROP TABLE IF EXISTS ${tablePath}`);
+          await connection.promise().execute(`CREATE TABLE IF NOT EXISTS ${tablePath} (
             id INT AUTO_INCREMENT PRIMARY KEY,
             ${textField} TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
             ${embeddingField} BLOB
           )`);
 
-          await connection.promise().execute(`TRUNCATE TABLE ${table}`);
+          await connection.promise().execute(`TRUNCATE TABLE ${tablePath}`);
 
           for await (const i of fileEmbeddings) {
             await connection
               .promise()
-              .execute(`INSERT INTO ${table} (${textField}, ${embeddingField}) VALUES (?, JSON_ARRAY_PACK(?))`, [
+              .execute(`INSERT INTO ${tablePath} (${textField}, ${embeddingField}) VALUES (?, JSON_ARRAY_PACK(?))`, [
                 i[textField],
                 JSON.stringify(i[embeddingField])
               ]);

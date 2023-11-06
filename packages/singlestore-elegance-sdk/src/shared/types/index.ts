@@ -42,7 +42,7 @@ export type DefaultError = { status?: number; message: string };
 
 export type ConnectionTypes = "kai" | "mysql";
 
-type ConnectionBase<T extends string, K extends object> = Omit<K, "type"> & { type: T };
+type ConnectionBase<T extends string, K extends object> = Omit<K, "type"> & { type: T; dbName?: string };
 
 export type KaiConnectionConfig = Omit<MongoClientOptions, "uri" | "database"> & {
   uri: string;
@@ -84,7 +84,7 @@ export type MySQLSet = string;
 
 type WithConnections<T extends object, K extends object = object, M extends object = object> = {
   kai: { collection: string } & T & K;
-  mysql: { table: string } & T & M;
+  mysql: { db?: string; table: string } & T & M;
 };
 
 export type InsertOneResult<T = any> = T;

@@ -1,7 +1,7 @@
 import type { Connection, VectorSearchResult, VectorSearchBody, Pipeline } from "../../shared/types";
 import type { OpenAI } from "../utils";
 import { handleError } from "../../shared/helpers";
-import { createController } from "../utils";
+import { createController, getTablePath } from "../utils";
 
 export const createVectorSearchController = <T extends Connection>(connection: T, openai: OpenAI) => {
   return createController({
@@ -33,8 +33,9 @@ export const createVectorSearchController = <T extends Connection>(connection: T
 
           result = await connection.db.collection(collection).aggregate(pipeline).toArray();
         } else {
-          const { table } = body as VectorSearchBody["mysql"];
-          let query = `SELECT *, DOT_PRODUCT(${embeddingField}, JSON_ARRAY_PACK('[${queryEmbedding}]')) AS similarity FROM ${table} ORDER BY similarity DESC`;
+          const { db, table } = body as VectorSearchBody["mysql"];
+          const tablePath = getTablePath(connection, table, db);
+          let query = `SELECT *, DOT_PRODUCT(${embeddingField}, JSON_ARRAY_PACK('[${queryEmbedding}]')) AS similarity FROM ${tablePath} ORDER BY similarity DESC`;
 
           if (limit) {
             query += ` LIMIT ${limit}`;

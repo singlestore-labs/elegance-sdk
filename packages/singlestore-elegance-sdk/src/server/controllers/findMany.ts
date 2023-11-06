@@ -1,6 +1,6 @@
 import type { Connection, FindManyResult, FindManyBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
-import { createController } from "../utils";
+import { createController, getTablePath } from "../utils";
 
 export const createFindManyController = <T extends Connection>(connection: T) => {
   return createController({
@@ -15,7 +15,8 @@ export const createFindManyController = <T extends Connection>(connection: T) =>
           let _result = connection.db.collection(collection).find(filter, options);
           result = await _result.toArray();
         } else {
-          const { table, columns, where, skip, limit } = body as FindManyBody["mysql"];
+          const { db, table, columns, where, skip, limit } = body as FindManyBody["mysql"];
+          const tablePath = getTablePath(connection, table, db);
           let query = `SELECT`;
 
           if (columns) {
@@ -24,7 +25,7 @@ export const createFindManyController = <T extends Connection>(connection: T) =>
             query += " *";
           }
 
-          query += ` FROM ${table}`;
+          query += ` FROM ${tablePath}`;
 
           if (where) query += ` WHERE ${where}`;
           if (limit) query += ` LIMIT ${limit}`;
