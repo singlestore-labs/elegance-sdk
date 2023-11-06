@@ -15,5 +15,5 @@ export function createKaiConnection(config: KaiConnectionConfig): KaiConnection 
   const client = new MongoClient(uri, options);
   const db = client.db(database);
 
-  return { type: "kai", client, db };
+  return { type: "kai", dbName: database, client, db };
 }

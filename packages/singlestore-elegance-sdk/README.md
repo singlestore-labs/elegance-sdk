@@ -181,6 +181,7 @@ body: {
     value: MongoOptionalUnlessRequiredId<T>; // Value to insert
     options?: MongoInsertOneOptions;
   } | {
+    db?: string; // Database name
     table: string; // Table name
     generateId?: boolean;
     value: T;
@@ -202,6 +203,7 @@ body: {
     generateId?: boolean; // Generates the `id` string field
     options?: MongoBulkWriteOptions;
   } | {
+    db?: string; // Database name
     table: string; // Table name
     generateId?: boolean;
     values: Array<T>;
@@ -224,6 +226,7 @@ body: {
     options?: MongoUpdateOptions;
     updatedFilter?: MongoFilter<T[number]>; // Filter to find updated records
   } | {
+    db?: string; // Database name
     table: string; // Table name
     where: MySQLWhere; // MySQL WHERE string value to find records to update
     set: MySQLSet; // MySQL SET string value
@@ -245,6 +248,7 @@ body: {
     filter: MongoFilter<T>; // Filter to find records to delete
     options?: MongoDeleteOptions;
   } | {
+    db?: string; // Database name
     table: string; // Table name
     where: MySQLWhere; // MySQL WHERE string value to find records to delete
   }
@@ -264,6 +268,7 @@ body: {
     filter?: MongoFilter<T>; // Filter to find a record
     options?: MongoFindOptions;
   } | {
+    db?: string; // Database name
     table: string; // Table name
     columns?: string[]; // Columns to get by default *
     where?: MySQLWhere; // MySQL WHERE string value to find a record
@@ -284,6 +289,7 @@ body: {
     filter?: MongoFilter<T[number]>; // Filter to find records
     options?: MongoFindOptions;
   } | {
+    db?: string; // Database name
     table: string; // Table name
     columns?: string[]; // Columns to get by default *
     where?: MySQLWhere; // MySQL WHERE string value to find records
@@ -339,6 +345,7 @@ body: {
     query: string; // Search query
     limit?: number; // Number of records to get
   } | {
+    db?: string; // Database name
     table: string; // Table name
     embeddingField: string;
     query: string;
@@ -368,6 +375,7 @@ body: {
     maxContextLength?: number;
     temperature?: CreateChatCompletionBody["temperature"];
   } | {
+    db?: string; // Database name
     table: string; // Table name
     prompt: string;
     model?: string;
@@ -422,6 +430,7 @@ body: {
     embeddingField?: string; // Field name in which to save an embedding
     chunkSize?: number;
   } | {
+    db?: string; // Database name
     table: string; // Table name
     dataURL: string;
     textField?: string;

@@ -7,7 +7,7 @@ import type {
 } from "../../shared/types";
 import type { OpenAI } from "../utils";
 import { handleError } from "../../shared/helpers";
-import { createController } from "../utils";
+import { createController, getTablePath } from "../utils";
 
 export const createChatCompletionController = <T extends Connection>(connection: T, openai: OpenAI) => {
   return createController({
@@ -52,9 +52,10 @@ export const createChatCompletionController = <T extends Connection>(connection:
 
           searchResults = await connection.db.collection(collection).aggregate(pipeline).toArray();
         } else {
-          const { table } = body as ChatCompletionBody["mysql"];
+          const { db, table } = body as ChatCompletionBody["mysql"];
+          const tablePath = getTablePath(connection, table, db);
 
-          const query = `SELECT ${textField}, DOT_PRODUCT(${embeddingField}, JSON_ARRAY_PACK('[${promptEmbedding}]')) AS similarity FROM ${table} ORDER BY similarity DESC`;
+          const query = `SELECT ${textField}, DOT_PRODUCT(${embeddingField}, JSON_ARRAY_PACK('[${promptEmbedding}]')) AS similarity FROM ${tablePath} ORDER BY similarity DESC`;
 
           searchResults = ((await connection.promise().execute(query))[0] as any[]).map(i => {
             delete i[embeddingField];

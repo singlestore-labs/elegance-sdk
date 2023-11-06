@@ -1,6 +1,6 @@
 import type { Connection, UpdateManyResult, UpdateManyBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
-import { createController } from "../utils";
+import { createController, getTablePath } from "../utils";
 
 export const createUpdateManyController = <T extends Connection>(connection: T) => {
   return createController({
@@ -16,11 +16,14 @@ export const createUpdateManyController = <T extends Connection>(connection: T) 
           const updated = connection.db.collection(collection).find(updatedFilter ?? filter);
           result = await updated.toArray();
         } else {
-          const { table, set, where, updatedWhere } = body as UpdateManyBody["mysql"];
-          await connection.promise().execute(`UPDATE ${table} SET ${set} WHERE ${where}`);
+          const { db, table, set, where, updatedWhere } = body as UpdateManyBody["mysql"];
+          const tablePath = getTablePath(connection, table, db);
+
+          await connection.promise().execute(`UPDATE ${tablePath} SET ${set} WHERE ${where}`);
 
           if (updatedWhere) {
-            const updated = await connection.promise().execute(`SELECT * FROM ${table} WHERE ${updatedWhere}`);
+            const updated = await connection.promise().execute(`SELECT * FROM ${tablePath} WHERE ${updatedWhere}`);
+
             result = updated?.[0];
           }
         }

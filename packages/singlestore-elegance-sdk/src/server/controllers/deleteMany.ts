@@ -1,6 +1,6 @@
 import type { Connection, DeleteManyResult, DeleteManyBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
-import { createController } from "../utils";
+import { createController, getTablePath } from "../utils";
 
 export const createDeleteManyController = <T extends Connection>(connection: T) => {
   return createController({
@@ -12,8 +12,9 @@ export const createDeleteManyController = <T extends Connection>(connection: T) 
           const { collection, filter, options } = body as DeleteManyBody["kai"];
           await connection.db.collection(collection).deleteMany(filter, options);
         } else {
-          const { table, where } = body as DeleteManyBody["mysql"];
-          await connection.promise().query(`DELETE FROM ${table} WHERE ${where}`);
+          const { db, table, where } = body as DeleteManyBody["mysql"];
+          const tablePath = getTablePath(connection, table, db);
+          await connection.promise().query(`DELETE FROM ${tablePath} WHERE ${where}`);
         }
 
         return { message: "Records were deleted" };
