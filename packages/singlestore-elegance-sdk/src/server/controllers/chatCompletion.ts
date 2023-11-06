@@ -5,18 +5,16 @@ import type {
   Pipeline,
   CreateChatCompletionBody
 } from "../../shared/types";
-import type { OpenAI } from "../utils";
+import type { AI } from "../utils";
 import { handleError } from "../../shared/helpers";
 import { createController, getTablePath } from "../utils";
 
-export const createChatCompletionController = <T extends Connection>(connection: T, openai: OpenAI) => {
+export const createChatCompletionController = <T extends Connection>(connection: T, ai: AI) => {
   return createController({
     name: "chatCompletion",
     method: "POST",
     execute: async (body: ChatCompletionBody[T["type"]]): Promise<ChatCompletionResult> => {
       try {
-        if (!openai) throw new Error("OpenAI client is undefined");
-
         let result: ChatCompletionResult | undefined = undefined;
 
         const {
@@ -34,7 +32,7 @@ export const createChatCompletionController = <T extends Connection>(connection:
 
         if (!prompt) throw new Error("Prompt is required");
 
-        const promptEmbedding = (await openai.helpers.createEmbedding(prompt))[0];
+        const promptEmbedding = (await ai.createEmbedding(prompt))[0];
         let searchResults: any[] | undefined = undefined;
 
         if (connection.type === "kai") {
@@ -43,7 +41,7 @@ export const createChatCompletionController = <T extends Connection>(connection:
           const pipeline: Pipeline = [
             {
               $addFields: {
-                similarity: { $dotProduct: [`$${embeddingField}`, openai.helpers.embeddingToBuffer(promptEmbedding)] }
+                similarity: { $dotProduct: [`$${embeddingField}`, ai.embeddingToBuffer(promptEmbedding)] }
               }
             },
             { $project: { [textField]: 1, similarity: 1 } },
@@ -85,11 +83,16 @@ export const createChatCompletionController = <T extends Connection>(connection:
 
         messages = [...messages, ...restMessages];
 
-        const content = await openai.helpers.createChatCompletion({
+        const content = await ai.createChatCompletion({
+          prompt,
+          promptEmbedding,
           model,
+          temperature,
+          searchResults,
           messages,
-          max_tokens: maxTokens,
-          temperature
+          maxTokens,
+          maxContextLength,
+          minSimilarity
         });
 
         result = { content: content ?? "", context };

@@ -1,18 +1,28 @@
-import _OpenAI from "openai";
+import OpenAI from "openai";
+import type { CreateChatCompletionBody, EmbeddingInput } from "../../shared/types";
+import type { AIConfig } from "../types";
 import { csvStringToArray } from "./csv";
 import { decodeDataURL } from "./dataURL";
 import { pdfBufferToString } from "./pdf";
 import { splitText } from "./helpers";
-import { CreateChatCompletionBody, OpenAIConfig, OpenAIRequestOptions } from "../../shared/types";
 
-export type OpenAI = ReturnType<typeof createOpenAI>;
+export type AI = ReturnType<typeof createAI>;
 
-export function createOpenAI(config?: OpenAIConfig) {
+function createOpenAI(config?: AIConfig["openai"]) {
   if (!config?.apiKey) return undefined;
+  return new OpenAI(config);
+}
 
-  const openai = new _OpenAI(config);
+export function createAI<A extends AIConfig = AIConfig>(config?: A) {
+  const openai = createOpenAI(config?.openai);
 
-  function createEmbedding(input: string | object | string[] | object[]) {
+  function createEmbedding(input: EmbeddingInput) {
+    if (config?.customizers?.createEmbedding) {
+      return config.customizers.createEmbedding(input);
+    }
+
+    if (!openai) return [];
+
     let retries = 0;
     let _input = Array.isArray(input) ? input : [input];
 
@@ -24,7 +34,7 @@ export function createOpenAI(config?: OpenAIConfig) {
 
     async function create(): Promise<number[][]> {
       try {
-        const response = await openai.embeddings.create({ input: _input, model: "text-embedding-ada-002" });
+        const response = await openai!.embeddings.create({ input: _input, model: "text-embedding-ada-002" });
         retries = 0;
         return response.data.map(({ embedding }) => embedding);
       } catch (error) {
@@ -39,11 +49,6 @@ export function createOpenAI(config?: OpenAIConfig) {
     }
 
     return create();
-  }
-
-  function embeddingToBuffer(embedding: number[]) {
-    const float32 = new Float32Array(embedding);
-    return Buffer.from(new Uint8Array(float32.buffer));
   }
 
   async function textToEmbeddings(
@@ -85,20 +90,34 @@ export function createOpenAI(config?: OpenAIConfig) {
     return embeddingsWithText;
   }
 
-  async function createChatCompletion(body: CreateChatCompletionBody, options?: OpenAIRequestOptions) {
-    const response = await openai.chat.completions.create(
-      {
-        ...options,
-        model: body.model ?? "gpt-3.5-turbo",
-        messages: [...(body.messages ?? [])]
-      },
-      options
-    );
+  function embeddingToBuffer(embedding: number[]) {
+    const float32 = new Float32Array(embedding);
+    return Buffer.from(new Uint8Array(float32.buffer));
+  }
+
+  async function createChatCompletion(body: CreateChatCompletionBody) {
+    if (config?.customizers?.createChatCompletion) {
+      return config.customizers.createChatCompletion(body);
+    }
+
+    if (!openai) return null;
+
+    const response = await openai.chat.completions.create({
+      model: body.model ?? "gpt-3.5-turbo",
+      messages: [...(body.messages ?? [])],
+      max_tokens: body.maxTokens,
+      temperature: body.temperature
+    });
 
     return response.choices[0]?.message.content;
   }
 
-  return Object.assign(openai, {
-    helpers: { createEmbedding, embeddingToBuffer, textToEmbeddings, dataURLtoEmbeddings, createChatCompletion }
-  });
+  return {
+    openai,
+    createEmbedding,
+    textToEmbeddings,
+    dataURLtoEmbeddings,
+    embeddingToBuffer,
+    createChatCompletion
+  };
 }

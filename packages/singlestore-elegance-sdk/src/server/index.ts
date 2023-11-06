@@ -1,7 +1,7 @@
 import type { ConnectionTypes } from "../shared/types";
 import type { EleganceServerClientConfig } from "./types";
 import { createControllers } from "./controllers";
-import { createConnection, createOpenAI } from "./utils";
+import { createAI, createConnection } from "./utils";
 
 export { ObjectId } from "mongodb";
 export * from "./types";
@@ -17,9 +17,9 @@ export function createEleganceServerClient<
   C extends EleganceServerClientConfig<T> = EleganceServerClientConfig<T>
 >(type: T, config: C) {
   const connection = createConnection(type, config.connection);
-  const openai = createOpenAI(config.openai);
-  const controllers = createControllers(connection, openai);
+  const ai = createAI(config.ai);
+  const controllers = createControllers(connection, ai);
   const handleRoute = createRouteHandler(controllers);
 
-  return { connection, controllers, handleRoute, openai };
+  return { connection, ai, controllers, handleRoute };
 }

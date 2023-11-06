@@ -1,5 +1,5 @@
 import type { Connection } from "../../shared/types";
-import { OpenAI } from "../utils";
+import type { AI } from "../utils";
 import { createCreateAndInsertFileEmbeddingsController } from "./createAndInsertFileEmbeddings";
 import { createFindManyController } from "./findMany";
 import { createFindOneController } from "./findOne";
@@ -13,7 +13,7 @@ import { createDeleteManyController } from "./deleteMany";
 import { createCreateEmbeddingController } from "./createEmbedding";
 import { createCreateFileEmbeddingsController } from "./createFileEmbeddings";
 
-export function createControllers<T extends Connection>(connection: T, openai?: OpenAI) {
+export function createControllers<T extends Connection>(connection: T, ai: AI) {
   return {
     insertOne: createInsertOneController(connection),
     insertMany: createInsertManyController(connection),
@@ -22,10 +22,10 @@ export function createControllers<T extends Connection>(connection: T, openai?: 
     findOne: createFindOneController(connection),
     findMany: createFindManyController(connection),
     query: createQueryController(connection),
-    createEmbedding: createCreateEmbeddingController(openai),
-    createFileEmbeddings: createCreateFileEmbeddingsController(openai),
-    createAndInsertFileEmbeddings: createCreateAndInsertFileEmbeddingsController(connection, openai),
-    vectorSearch: createVectorSearchController(connection, openai),
-    chatCompletion: createChatCompletionController(connection, openai)
+    createEmbedding: createCreateEmbeddingController(ai),
+    createFileEmbeddings: createCreateFileEmbeddingsController(ai),
+    createAndInsertFileEmbeddings: createCreateAndInsertFileEmbeddingsController(connection, ai),
+    vectorSearch: createVectorSearchController(connection, ai),
+    chatCompletion: createChatCompletionController(connection, ai)
   };
 }
