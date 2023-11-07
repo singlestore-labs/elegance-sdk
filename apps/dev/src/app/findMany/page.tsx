@@ -12,6 +12,7 @@ export default function FindMany() {
   const findManyKai = eleganceClientKai.hooks.useFindMany();
   const findManyMySQL = eleganceClientMySQL.hooks.useFindMany();
   const [connectionTypeValue, setConnectionTypeValue] = useState("kai");
+  const [dbNameValue, setDbNameValue] = useState(DB_NAME);
   const [collectionValue, setCollectionValue] = useState(DB_NAME);
   const [filterValue, setFilterValue] = useState(JSON.stringify({ name: "Polaris" }, null, 2));
   const [whereValue, setWhereValue] = useState('name = "Polaris"');
@@ -31,6 +32,7 @@ export default function FindMany() {
       });
     } else {
       await findManyMySQL.execute({
+        db: dbNameValue,
         table: collectionValue,
         where: whereValue,
         skip: skipValue,
@@ -43,6 +45,18 @@ export default function FindMany() {
     <PageContent heading="Feature: FindMany">
       <form className="mt-12 flex flex-col gap-4 " onSubmit={handleSubmit}>
         <ConnectionTypeSelect value={connectionTypeValue} onChange={setConnectionTypeValue} />
+
+        {connectionTypeValue === "mysql" ? (
+          <label className="w-full ">
+            <span className="mb-2 inline-block">Database</span>
+            <input
+              value={dbNameValue}
+              onChange={event => setDbNameValue(event.target.value)}
+              placeholder={`Enter database name`}
+              className="w-full rounded border px-4 py-2 "
+            />
+          </label>
+        ) : null}
 
         <CollectionOrTableField
           connectionType={connectionTypeValue}
