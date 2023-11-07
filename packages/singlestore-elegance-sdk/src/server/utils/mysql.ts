@@ -2,26 +2,28 @@ import { createPool } from "mysql2";
 import type { MySQLConnectionConfig, MySQLConnection } from "../../shared/types";
 
 export function createMySQLConnection(config: MySQLConnectionConfig): MySQLConnection {
-  if (!config.host) {
+  const { database, ..._config } = config;
+
+  if (!_config.host) {
     throw new Error("Host is undefined");
   }
 
-  if (!config.user) {
+  if (!_config.user) {
     throw new Error("User is undefined");
   }
 
-  if (!config.password) {
+  if (!_config.password) {
     throw new Error("Password is undefined");
   }
 
-  return Object.assign(createPool(config), {
+  return Object.assign(createPool(_config), {
     type: "mysql" as MySQLConnection["type"],
-    dbName: config.database as MySQLConnection["dbName"]
+    dbName: database as MySQLConnection["dbName"]
   });
 }
 
 export function processDbName(connection: MySQLConnection, dbName?: string): string {
-  return dbName ?? connection.dbName ?? "";
+  return dbName || connection.dbName || "";
 }
 
 export function concatDbAndTableNames(table: string, dbName?: string) {
