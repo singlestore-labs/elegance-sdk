@@ -1,6 +1,6 @@
-import csvParser from "csv-parser";
+export async function csvStringToArray(csvString: string): Promise<string[]> {
+  const csvParser = (await import("csv-parser")).default;
 
-export function csvStringToArray(csvString: string): Promise<string[]> {
   return new Promise((resolve, reject) => {
     const data: string[] = [];
     const stream = csvParser();
