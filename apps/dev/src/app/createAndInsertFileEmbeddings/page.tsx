@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ConnectionTypes } from "@singlestore/elegance-sdk/types";
+import { CreateAndInsertFileEmbeddingsRequestBody } from "@singlestore/elegance-sdk";
 
 import { eleganceClientKai, eleganceClientMySQL } from "@/services/eleganceClient";
 import { Button } from "@/components/Button";
@@ -28,29 +29,19 @@ export default function CreateAndInsertFileEmbeddings() {
     event.preventDefault();
     if (!file) return;
 
-    try {
-      const reader = new FileReader();
+    const body: CreateAndInsertFileEmbeddingsRequestBody = {
+      db,
+      collection,
+      file,
+      chunkSize,
+      textField,
+      embeddingField
+    };
 
-      reader.onload = async event => {
-        const payload = {
-          db,
-          collection,
-          dataURL: event.target!.result as string,
-          chunkSize,
-          textField,
-          embeddingField
-        };
-
-        if (connectionType === "kai") {
-          await createAndInsertFileEmbeddingsKai.execute(payload);
-        } else {
-          await createAndInsertFileEmbeddingsMySQL.execute(payload);
-        }
-      };
-
-      reader.readAsDataURL(file);
-    } catch (error) {
-      console.error(error);
+    if (connectionType === "kai") {
+      createAndInsertFileEmbeddingsKai.execute(body);
+    } else {
+      createAndInsertFileEmbeddingsMySQL.execute(body);
     }
   };
 

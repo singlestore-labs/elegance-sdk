@@ -19,23 +19,7 @@ export default function CreateFileEmbeddings() {
   const handleSubmit: JSX.IntrinsicElements["form"]["onSubmit"] = event => {
     event.preventDefault();
     if (!file) return;
-
-    try {
-      const reader = new FileReader();
-
-      reader.onload = async event => {
-        await createFileEmbeddingsKai.execute({
-          dataURL: event.target!.result as string,
-          textField,
-          embeddingField,
-          chunkSize
-        });
-      };
-
-      reader.readAsDataURL(file);
-    } catch (error) {
-      console.error(error);
-    }
+    createFileEmbeddingsKai.execute({ file, textField, embeddingField, chunkSize });
   };
 
   return (

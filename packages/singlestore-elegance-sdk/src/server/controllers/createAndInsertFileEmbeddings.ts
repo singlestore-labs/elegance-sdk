@@ -7,7 +7,7 @@ import type { AI } from "../utils";
 import { handleError } from "../../shared/helpers";
 
 export const createCreateAndInsertFileEmbeddingsController = <T extends Connection>(connection: T, ai: AI) => {
-  return async (body: CreateAndInsertFileEmbeddingsBody[T["type"]]): Promise<CreateAndInsertFileEmbeddingsResult> => {
+  return async (body: CreateAndInsertFileEmbeddingsBody): Promise<CreateAndInsertFileEmbeddingsResult> => {
     try {
       const { db, collection, dataURL, chunkSize = 1000, textField = "text", embeddingField = "embedding" } = body;
       const fileEmbeddings = await ai.dataURLtoEmbeddings(dataURL, {

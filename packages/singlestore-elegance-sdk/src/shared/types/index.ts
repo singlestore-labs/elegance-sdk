@@ -212,7 +212,7 @@ export type CreateFileEmbeddingsBody = {
 };
 
 export type CreateAndInsertFileEmbeddingsResult = { text: string; embedding: number[] }[];
-export type CreateAndInsertFileEmbeddingsBody = WithConnections<{
+export type CreateAndInsertFileEmbeddingsBody = ControllerBodyBase<{
   dataURL: string;
   textField?: string;
   embeddingField?: string;

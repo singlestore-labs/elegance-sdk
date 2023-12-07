@@ -424,7 +424,8 @@ Accepts a CSV or PDF file as a DataURL, splits it into chunks and creates embedd
 
 ```tsx
 body: {
-    dataURL: string; // CSV or PDF file DataURL
+    file?: // CSV or PDF file
+    dataURL?: string; // CSV or PDF file DataURL
     textField?: string; // Field name in which to save a chunk text
     embeddingField?: string; // Field name in which to save an embedding
     chunkSize?: number;
@@ -443,16 +444,10 @@ Accepts a CSV or PDF file as a DataURL, splits it into chunks, creates embedding
 body: {
     db?: string; // Database name
     collection: string; // Collection name
-    dataURL: string; // CSV or PDF file DataURL
+    file?: // CSV or PDF file
+    dataURL?: string; // CSV or PDF file DataURL
     textField?: string; // Field name in which to save a chunk text
     embeddingField?: string; // Field name in which to save an embedding
-    chunkSize?: number;
-  } | {
-    db?: string;
-    collection: string;
-    dataURL: string;
-    textField?: string;
-    embeddingField?: string;
     chunkSize?: number;
   }
 ```
