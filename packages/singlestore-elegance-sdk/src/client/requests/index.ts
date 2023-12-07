@@ -71,15 +71,12 @@ export function createRequests<T extends ConnectionTypes>(fetcher: Fetcher) {
 
     createAndInsertFileEmbeddings: createAndInsertFileEmbeddingsRequest(fetcher),
 
-    vectorSearch: <R extends VectorSearchResult = VectorSearchResult>(
-      body: VectorSearchBody[T],
-      init?: RequestInit
-    ) => {
+    vectorSearch: <R extends VectorSearchResult = VectorSearchResult>(body: VectorSearchBody, init?: RequestInit) => {
       return _fetch<R>("/vectorSearch", body, init);
     },
 
     chatCompletion: <R extends ChatCompletionResult = ChatCompletionResult>(
-      body: ChatCompletionBody[T],
+      body: ChatCompletionBody,
       init?: RequestInit
     ) => {
       return _fetch<R>("/chatCompletion", body, init);

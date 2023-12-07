@@ -10,6 +10,7 @@ export const createCreateAndInsertFileEmbeddingsController = <T extends Connecti
   return async (body: CreateAndInsertFileEmbeddingsBody): Promise<CreateAndInsertFileEmbeddingsResult> => {
     try {
       const { db, collection, dataURL, chunkSize = 1000, textField = "text", embeddingField = "embedding" } = body;
+
       const fileEmbeddings = await ai.dataURLtoEmbeddings(dataURL, {
         chunkSize,
         textField,

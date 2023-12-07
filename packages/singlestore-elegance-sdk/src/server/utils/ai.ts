@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import type { CreateChatCompletionBody, EmbeddingInput } from "../../shared/types";
+import type { CreateChatCompletionBody, Embedding, EmbeddingInput } from "../../shared/types";
 import type { AIConfig } from "../types";
 import { csvStringToArray } from "./csv";
 import { decodeDataURL } from "./dataURL";
@@ -32,7 +32,7 @@ export function createAI<A extends AIConfig = AIConfig>(config?: A) {
 
     _input = _input.map(i => i.replace("\n", " "));
 
-    async function create(): Promise<number[][]> {
+    async function create(): Promise<Embedding[]> {
       try {
         const response = await openai!.embeddings.create({ input: _input, model: "text-embedding-ada-002" });
         retries = 0;
@@ -90,7 +90,7 @@ export function createAI<A extends AIConfig = AIConfig>(config?: A) {
     return embeddingsWithText;
   }
 
-  function embeddingToBuffer(embedding: number[]) {
+  function embeddingToBuffer(embedding: Embedding) {
     const float32 = new Float32Array(embedding);
     return Buffer.from(new Uint8Array(float32.buffer));
   }

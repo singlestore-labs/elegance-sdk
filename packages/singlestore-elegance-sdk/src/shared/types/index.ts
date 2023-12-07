@@ -35,18 +35,6 @@ export type {
   MySQLPool
 };
 
-export type CreateChatCompletionBody = {
-  prompt?: string;
-  promptEmbedding?: number[];
-  model?: string;
-  temperature?: number;
-  searchResults?: ({ similarity: number } & Record<string, any>)[];
-  messages?: ChatCompletionCreateParamsNonStreaming["messages"];
-  maxTokens?: number;
-  maxContextLength?: number;
-  minSimilarity?: number;
-};
-
 export type DefaultError = { status?: number; message: string };
 
 export type ConnectionTypes = "kai" | "mysql";
@@ -63,12 +51,12 @@ export type ConnectionConfigsMap = {
   mysql: MySQLConnectionConfig;
 };
 
-type ConnectionBase<T extends string, K extends object> = Omit<K, "type" | "dbName"> & {
+type BaseConnection<T extends string, K extends object> = Omit<K, "type" | "dbName"> & {
   type: T;
   dbName?: string;
 };
 
-export type KaiConnection = ConnectionBase<
+export type KaiConnection = BaseConnection<
   "kai",
   {
     client: MongoClient;
@@ -76,7 +64,7 @@ export type KaiConnection = ConnectionBase<
   }
 >;
 
-export type MySQLConnection = ConnectionBase<
+export type MySQLConnection = BaseConnection<
   "mysql",
   Omit<ReturnType<MySQLPool["promise"]>, "tablePath"> & {
     tablePath: (table: string, dbName?: string) => string;
@@ -95,19 +83,20 @@ export type AggregateQuery = Record<any, any>[];
 
 export type Filter = { [K: string]: any };
 
+export type Embedding = number[];
 export type EmbeddingInput = string | object | string[] | object[];
 
 export type MySQLWhere = string;
 export type MySQLSet = string;
 
-type ControllerBodyBase<T extends object> = Omit<T, "db" | "collection"> & {
+type WithDb<T extends object> = Omit<T, "db" | "collection"> & {
   db?: string;
   collection: string;
 };
 
 type WithConnections<T extends object, K extends object = object, M extends object = object> = {
-  kai: ControllerBodyBase<T & K>;
-  mysql: ControllerBodyBase<T & M>;
+  kai: WithDb<T & K>;
+  mysql: WithDb<T & M>;
 };
 
 export type InsertOneResult<T = any> = T;
@@ -169,20 +158,18 @@ export type FindManyBody<T extends FindManyResult = FindManyResult> = WithConnec
 
 export type QueryResult = any[];
 export type QueryBody = {
-  kai: ControllerBodyBase<{
+  kai: WithDb<{
     query: object[];
     options?: MongoAggregateOptions;
   }>;
   mysql: { query: string };
 };
 
-export type CreateEmbeddingResult = number[][];
-export type CreateEmbeddingBody = {
-  input: string | string[] | object | object[];
-};
+export type CreateEmbeddingResult = Embedding[];
+export type CreateEmbeddingBody = { input: EmbeddingInput };
 
 export type VectorSearchResult = any[];
-export type VectorSearchBody = WithConnections<{
+export type VectorSearchBody = WithDb<{
   query: string;
   embeddingField: string;
   limit?: number;
@@ -192,18 +179,17 @@ export type ChatCompletionResult = {
   content: string;
   context: string;
 };
-export type ChatCompletionBody = WithConnections<
+export type ChatCompletionBody = WithDb<
   {
     textField?: string;
     embeddingField?: string;
-    systemRole?: string;
   } & Pick<
     CreateChatCompletionBody,
-    "prompt" | "model" | "messages" | "minSimilarity" | "maxTokens" | "maxContextLength" | "temperature"
+    "prompt" | "model" | "systemRole" | "messages" | "minSimilarity" | "maxTokens" | "maxContextLength" | "temperature"
   >
 >;
 
-export type CreateFileEmbeddingsResult = { text: string; embedding: number[] }[];
+export type CreateFileEmbeddingsResult = { text: string; embedding: Embedding }[];
 export type CreateFileEmbeddingsBody = {
   dataURL: string;
   textField?: string;
@@ -211,10 +197,24 @@ export type CreateFileEmbeddingsBody = {
   chunkSize?: number;
 };
 
-export type CreateAndInsertFileEmbeddingsResult = { text: string; embedding: number[] }[];
-export type CreateAndInsertFileEmbeddingsBody = ControllerBodyBase<{
+export type CreateAndInsertFileEmbeddingsResult = { text: string; embedding: Embedding }[];
+export type CreateAndInsertFileEmbeddingsBody = WithDb<{
   dataURL: string;
   textField?: string;
   embeddingField?: string;
   chunkSize?: number;
 }>;
+
+export type CreateChatCompletionResult = { content: string };
+export type CreateChatCompletionBody = {
+  systemRole?: string;
+  prompt?: string;
+  promptEmbedding?: Embedding;
+  model?: string;
+  temperature?: number;
+  searchResults?: ({ similarity: number } & Record<string, any>)[];
+  messages?: ChatCompletionCreateParamsNonStreaming["messages"];
+  maxTokens?: number;
+  maxContextLength?: number;
+  minSimilarity?: number;
+};

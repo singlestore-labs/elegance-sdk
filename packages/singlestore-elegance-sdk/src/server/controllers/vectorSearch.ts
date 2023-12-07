@@ -3,7 +3,7 @@ import type { AI } from "../utils";
 import { handleError } from "../../shared/helpers";
 
 export const createVectorSearchController = <T extends Connection>(connection: T, ai: AI) => {
-  return async <R extends VectorSearchResult = VectorSearchResult>(body: VectorSearchBody[T["type"]]): Promise<R> => {
+  return async <R extends VectorSearchResult = VectorSearchResult>(body: VectorSearchBody): Promise<R> => {
     try {
       let result: any = undefined;
       const { db, collection, embeddingField, query, limit } = body;

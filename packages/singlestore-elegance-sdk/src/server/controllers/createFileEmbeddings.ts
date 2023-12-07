@@ -8,6 +8,7 @@ export const createCreateFileEmbeddingsController = (ai: AI) => {
       if (!body.dataURL) throw new Error("dataURL is required field");
 
       const { dataURL, chunkSize = 1000, textField = "text", embeddingField = "embedding" } = body;
+
       const fileEmbeddings = await ai.dataURLtoEmbeddings(dataURL, {
         chunkSize,
         textField,

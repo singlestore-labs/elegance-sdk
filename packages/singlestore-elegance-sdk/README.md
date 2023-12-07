@@ -150,7 +150,7 @@ Creates an EleganceServerClient instance for a server.
     ai?: {
       openai?: OpenAIConfig;
       customizers?: {
-        createEmbedding?: (input: EmbeddingInput) => Promise<number[][]>;
+        createEmbedding?: (input: EmbeddingInput) => Promise<Embedding[]>;
         createChatCompletion?: (body: CreateChatCompletionBody) => Promise<string | null>;
       } // You can use your own functions to create an embedding or a chat completion.
     };
@@ -345,7 +345,7 @@ body: {
 }
 ```
 
-**Returns:** `Array<number>`
+**Returns:** `Embedding`
 
 #### eleganceServerClient.controllers.vectorSearch
 
@@ -360,12 +360,6 @@ body: {
     embeddingField: string; // Field name with the embedding by which to perform the search
     query: string; // Search query
     limit?: number; // Number of records to get
-  } | {
-    db?: string;
-    collection: string;
-    embeddingField: string;
-    query: string;
-    limit?: number;
   }
 ```
 
@@ -388,19 +382,6 @@ body: {
     minSimilarity?: number; // Minimum similarity number to filter search results, used to create a chat completion.
     systemRole?: string; // Initial system role
     messages?: CreateChatCompletionBody["messages"]; // Additional messages after the prompt message
-    maxTokens?: CreateChatCompletionBody["max_tokens"];
-    maxContextLength?: number;
-    temperature?: CreateChatCompletionBody["temperature"];
-  } | {
-    db?: string;
-    collection: string;
-    prompt: string;
-    model?: string;
-    textField?: string;
-    embeddingField?: string;
-    minSimilarity?: number;
-    systemRole?: string;
-    messages?: CreateChatCompletionBody["messages"];
     maxTokens?: CreateChatCompletionBody["max_tokens"];
     maxContextLength?: number;
     temperature?: CreateChatCompletionBody["temperature"];
@@ -432,7 +413,7 @@ body: {
   }
 ```
 
-**Returns:** `Array<{ text: string; embedding: number[]; }>`
+**Returns:** `Array<{ text: string; embedding: Embedding; }>`
 
 #### eleganceServerClient.controllers.createAndInsertFileEmbeddings
 
@@ -452,7 +433,7 @@ body: {
   }
 ```
 
-**Returns:** `Array<{ text: string; embedding: number[]; }>`
+**Returns:** `Array<{ text: string; embedding: Embedding; }>`
 
 #### eleganceServerClient.ai.openai
 
@@ -466,7 +447,7 @@ Creates embedding
 
 - `input: string | Array<string> | object | Array<object>` - input value
 
-**Returns:** `Array<number>`
+**Returns:** `Embedding`
 
 #### eleganceServerClient.ai.embeddingToBuffer
 
@@ -474,7 +455,7 @@ Converts an embedding into a buffer that is then inserted into the database.
 
 **Parameters:**
 
-- `embedding: Array<number>`
+- `embedding: Embedding`
 
 **Returns:** `Buffer`
 
@@ -508,7 +489,7 @@ Converts a DataURL (csv, pdf) into an embedding by splitting the text into chunk
   }
   ```
 
-**Returns:** `Array<{ text: string; embedding: number[] }>`
+**Returns:** `Array<{ text: string; embedding: Embedding }>`
 
 #### eleganceServerClient.ai.createChatCompletion
 
@@ -519,7 +500,7 @@ Generates a chat completion.
 - ```tsx
   body: {
     prompt?: string;
-    promptEmbedding?: Array<number>;
+    promptEmbedding?: Embedding;
     model?: string;
     temperature?: number;
     searchResults?: ({ similarity: number } & Record<string, any>)[];

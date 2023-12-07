@@ -3,6 +3,7 @@ import type {
   ConnectionConfigsMap,
   ConnectionTypes,
   CreateChatCompletionBody,
+  Embedding,
   EmbeddingInput,
   OpenAIConfig
 } from "../shared/types";
@@ -12,7 +13,7 @@ export type Routes = keyof ReturnType<typeof createControllers>;
 export type EleganceServerClient<T extends ConnectionTypes> = ReturnType<typeof createEleganceServerClient<T>>;
 
 export type AICustomizers = {
-  createEmbedding?: (input: EmbeddingInput) => Promise<number[][]>;
+  createEmbedding?: (input: EmbeddingInput) => Promise<Embedding[]>;
   createChatCompletion?: (body: CreateChatCompletionBody) => Promise<string | null>;
 };
 

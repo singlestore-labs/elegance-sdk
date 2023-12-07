@@ -9,7 +9,7 @@ import type { AI } from "../utils";
 import { handleError } from "../../shared/helpers";
 
 export const createChatCompletionController = <T extends Connection>(connection: T, ai: AI) => {
-  return async (body: ChatCompletionBody[T["type"]]): Promise<ChatCompletionResult> => {
+  return async (body: ChatCompletionBody): Promise<ChatCompletionResult> => {
     try {
       let result: ChatCompletionResult | undefined = undefined;
 
