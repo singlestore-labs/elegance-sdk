@@ -89,16 +89,6 @@ export type Connection<T extends ConnectionTypes = any> = T extends ConnectionTy
     : MySQLConnection
   : KaiConnection | MySQLConnection;
 
-export type ContollerMethods = "POST";
-
-export type ControllerExecuteFn = (...args: any[]) => any;
-
-export type Controller<E extends ControllerExecuteFn = ControllerExecuteFn> = {
-  name: string;
-  method: ContollerMethods;
-  execute: E;
-};
-
 export type Request = (...args: any[]) => Promise<any>;
 
 export type Pipeline = Record<any, any>[];

@@ -6,12 +6,6 @@ import { createAI, createConnection } from "./utils";
 export { ObjectId } from "mongodb";
 export * from "./types";
 
-export function createRouteHandler<T extends Record<string, any>>(controllers: T) {
-  return <K extends keyof T>(route: K, ...args: Parameters<T[K]["execute"]>): ReturnType<T[K]["execute"]> => {
-    return controllers[route].execute(...args);
-  };
-}
-
 export function createEleganceServerClient<
   T extends ConnectionTypes,
   C extends EleganceServerClientConfig<T> = EleganceServerClientConfig<T>
@@ -22,4 +16,10 @@ export function createEleganceServerClient<
   const handleRoute = createRouteHandler(controllers);
 
   return { connection, ai, controllers, handleRoute };
+}
+
+function createRouteHandler<T extends Record<string, any>>(controllers: T) {
+  return <K extends keyof T>(route: K, ...args: Parameters<T[K]>): ReturnType<T[K]> => {
+    return controllers[route](...args);
+  };
 }
