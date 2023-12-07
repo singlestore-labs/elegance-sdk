@@ -91,7 +91,7 @@ export type Connection<T extends ConnectionTypes = any> = T extends ConnectionTy
 
 export type Request = (...args: any[]) => Promise<any>;
 
-export type Pipeline = Record<any, any>[];
+export type AggregateQuery = Record<any, any>[];
 
 export type Filter = { [K: string]: any };
 
@@ -170,7 +170,7 @@ export type FindManyBody<T extends FindManyResult = FindManyResult> = WithConnec
 export type QueryResult = any[];
 export type QueryBody = {
   kai: ControllerBodyBase<{
-    pipeline: object[];
+    query: object[];
     options?: MongoAggregateOptions;
   }>;
   mysql: { query: string };

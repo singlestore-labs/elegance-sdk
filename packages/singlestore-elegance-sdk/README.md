@@ -324,7 +324,7 @@ Executes MySQL or aggregate query.
 body: {
     db?: string; // Database name
     collection: string; // Collection name
-    pipeline: object[]; // Aggregate pipeline
+    query: object[]; // Aggregate query
     options?: MongoAggregateOptions;
   } | {
     query: string; // MySQL query

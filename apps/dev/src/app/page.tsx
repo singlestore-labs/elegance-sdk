@@ -31,7 +31,7 @@ export default function Query() {
       await queryKai.execute({
         db,
         collection,
-        pipeline: JSON.parse(aggregateQuery.trim())
+        query: JSON.parse(aggregateQuery.trim())
       });
     } else {
       if (!mysqlQuery) return;

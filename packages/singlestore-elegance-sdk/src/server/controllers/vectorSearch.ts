@@ -1,4 +1,4 @@
-import type { Connection, VectorSearchResult, VectorSearchBody, Pipeline } from "../../shared/types";
+import type { Connection, VectorSearchResult, VectorSearchBody, AggregateQuery } from "../../shared/types";
 import type { AI } from "../utils";
 import { handleError } from "../../shared/helpers";
 
@@ -12,17 +12,17 @@ export const createVectorSearchController = <T extends Connection>(connection: T
       if (connection.type === "kai") {
         const queryBuffer = ai.embeddingToBuffer(queryEmbedding);
 
-        const pipeline: Pipeline = [
+        const query: AggregateQuery = [
           { $addFields: { similarity: { $dotProduct: [`$${embeddingField}`, queryBuffer] } } },
           { $project: { [embeddingField]: 0 } },
           { $sort: { similarity: -1 } }
         ];
 
         if (limit) {
-          pipeline.push({ $limit: limit });
+          query.push({ $limit: limit });
         }
 
-        result = await connection.db(db).collection(collection).aggregate(pipeline).toArray();
+        result = await connection.db(db).collection(collection).aggregate(query).toArray();
       } else {
         const tablePath = connection.tablePath(collection, db);
         let query = `SELECT *, DOT_PRODUCT(${embeddingField}, JSON_ARRAY_PACK('[${queryEmbedding}]')) AS similarity FROM ${tablePath} ORDER BY similarity DESC`;

@@ -2,7 +2,7 @@ import type {
   Connection,
   ChatCompletionBody,
   ChatCompletionResult,
-  Pipeline,
+  AggregateQuery,
   CreateChatCompletionBody
 } from "../../shared/types";
 import type { AI } from "../utils";
@@ -34,7 +34,7 @@ export const createChatCompletionController = <T extends Connection>(connection:
       let searchResults: any[] | undefined = undefined;
 
       if (connection.type === "kai") {
-        const pipeline: Pipeline = [
+        const query: AggregateQuery = [
           {
             $addFields: {
               similarity: { $dotProduct: [`$${embeddingField}`, ai.embeddingToBuffer(promptEmbedding)] }
@@ -44,7 +44,7 @@ export const createChatCompletionController = <T extends Connection>(connection:
           { $sort: { similarity: -1 } }
         ];
 
-        searchResults = await connection.db(db).collection(collection).aggregate(pipeline).toArray();
+        searchResults = await connection.db(db).collection(collection).aggregate(query).toArray();
       } else {
         const tablePath = connection.tablePath(collection, db);
 

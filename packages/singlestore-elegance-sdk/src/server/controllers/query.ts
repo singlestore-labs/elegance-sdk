@@ -7,8 +7,8 @@ export const createQueryController = <T extends Connection>(connection: T) => {
       let result: any = undefined;
 
       if (connection.type === "kai") {
-        const { db, collection, pipeline, options } = body as QueryBody["kai"];
-        result = await connection.db(db).collection(collection).aggregate(pipeline, options).toArray();
+        const { db, collection, query, options } = body as QueryBody["kai"];
+        result = await connection.db(db).collection(collection).aggregate(query, options).toArray();
       } else {
         const { query } = body as QueryBody["mysql"];
         result = (await connection.query(query))[0];
