@@ -12,11 +12,10 @@ export const createVectorSearchController = <T extends Connection>(connection: T
     ): Promise<R> => {
       try {
         let result: any = undefined;
-        const { embeddingField, query, limit } = body;
+        const { db, collection, embeddingField, query, limit } = body;
         const queryEmbedding = (await ai.createEmbedding(query))[0];
 
         if (connection.type === "kai") {
-          const { collection } = body as VectorSearchBody["kai"];
           const queryBuffer = ai.embeddingToBuffer(queryEmbedding);
 
           const pipeline: Pipeline = [
@@ -29,10 +28,9 @@ export const createVectorSearchController = <T extends Connection>(connection: T
             pipeline.push({ $limit: limit });
           }
 
-          result = await connection.db().collection(collection).aggregate(pipeline).toArray();
+          result = await connection.db(db).collection(collection).aggregate(pipeline).toArray();
         } else {
-          const { db, table } = body as VectorSearchBody["mysql"];
-          const tablePath = connection.tablePath(table, db);
+          const tablePath = connection.tablePath(collection, db);
           let query = `SELECT *, DOT_PRODUCT(${embeddingField}, JSON_ARRAY_PACK('[${queryEmbedding}]')) AS similarity FROM ${tablePath} ORDER BY similarity DESC`;
 
           if (limit) {

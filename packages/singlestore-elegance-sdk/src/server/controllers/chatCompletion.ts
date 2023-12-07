@@ -18,6 +18,8 @@ export const createChatCompletionController = <T extends Connection>(connection:
         let result: ChatCompletionResult | undefined = undefined;
 
         const {
+          db,
+          collection,
           prompt,
           model,
           textField = "text",
@@ -36,8 +38,6 @@ export const createChatCompletionController = <T extends Connection>(connection:
         let searchResults: any[] | undefined = undefined;
 
         if (connection.type === "kai") {
-          const { collection } = body as ChatCompletionBody["kai"];
-
           const pipeline: Pipeline = [
             {
               $addFields: {
@@ -48,10 +48,9 @@ export const createChatCompletionController = <T extends Connection>(connection:
             { $sort: { similarity: -1 } }
           ];
 
-          searchResults = await connection.db().collection(collection).aggregate(pipeline).toArray();
+          searchResults = await connection.db(db).collection(collection).aggregate(pipeline).toArray();
         } else {
-          const { db, table } = body as ChatCompletionBody["mysql"];
-          const tablePath = connection.tablePath(table, db);
+          const tablePath = connection.tablePath(collection, db);
 
           const query = `SELECT ${textField}, DOT_PRODUCT(${embeddingField}, JSON_ARRAY_PACK('[${promptEmbedding}]')) AS similarity FROM ${tablePath} ORDER BY similarity DESC`;
 

@@ -10,12 +10,14 @@ export const createFindOneController = <T extends Connection>(connection: T) => 
       try {
         let result: any = undefined;
 
+        const { db, collection } = body;
+
         if (connection.type === "kai") {
-          const { collection, filter = {}, options } = body as FindOneBody["kai"];
-          result = await connection.db().collection(collection).findOne(filter, options);
+          const { filter = {}, options } = body as FindOneBody["kai"];
+          result = await connection.db(db).collection(collection).findOne(filter, options);
         } else {
-          const { db, table, columns, where } = body as FindOneBody["mysql"];
-          const tablePath = connection.tablePath(table, db);
+          const { columns, where } = body as FindOneBody["mysql"];
+          const tablePath = connection.tablePath(collection, db);
           let query = `SELECT`;
 
           if (columns) {

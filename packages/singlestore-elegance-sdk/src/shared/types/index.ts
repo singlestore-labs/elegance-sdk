@@ -110,9 +110,14 @@ export type EmbeddingInput = string | object | string[] | object[];
 export type MySQLWhere = string;
 export type MySQLSet = string;
 
+type ControllerBodyBase<T extends object> = Omit<T, "db" | "collection"> & {
+  db?: string;
+  collection: string;
+};
+
 type WithConnections<T extends object, K extends object = object, M extends object = object> = {
-  kai: { collection: string } & T & K;
-  mysql: { db?: string; table: string } & T & M;
+  kai: ControllerBodyBase<T & K>;
+  mysql: ControllerBodyBase<T & M>;
 };
 
 export type InsertOneResult<T = any> = T;
@@ -174,11 +179,10 @@ export type FindManyBody<T extends FindManyResult = FindManyResult> = WithConnec
 
 export type QueryResult = any[];
 export type QueryBody = {
-  kai: {
-    collection: string;
+  kai: ControllerBodyBase<{
     pipeline: object[];
     options?: MongoAggregateOptions;
-  };
+  }>;
   mysql: { query: string };
 };
 

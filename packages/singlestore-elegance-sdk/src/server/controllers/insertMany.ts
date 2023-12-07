@@ -10,16 +10,16 @@ export const createInsertManyController = <T extends Connection>(connection: T) 
     execute: async <R extends InsertManyResult = InsertManyResult>(body: InsertManyBody<R>[T["type"]]): Promise<R> => {
       try {
         let result: any = undefined;
-        const { generateId = false } = body;
+        const { db, collection, generateId = false } = body;
 
         if (connection.type === "kai") {
-          const { collection, values, options } = body as InsertManyBody["kai"];
+          const { values, options } = body as InsertManyBody["kai"];
           if (generateId) for (const value of values) value.id = new ObjectId().toString();
-          const inserted = await connection.db().collection(collection).insertMany(values, options);
+          const inserted = await connection.db(db).collection(collection).insertMany(values, options);
           result = values.map((value, i) => ({ id: inserted.insertedIds[i].toString(), ...value }));
         } else {
-          const { db, table, values } = body as InsertManyBody["mysql"];
-          const tablePath = connection.tablePath(table, db);
+          const { values } = body as InsertManyBody["mysql"];
+          const tablePath = connection.tablePath(collection, db);
           if (generateId) for (const value of values) value.id = new ObjectId().toString();
           const { query, valuesToInsert } = toInsertValuesQuery(tablePath, values);
           await connection.query(query, [valuesToInsert]);

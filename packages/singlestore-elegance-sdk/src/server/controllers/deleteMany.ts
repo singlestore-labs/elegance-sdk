@@ -8,12 +8,14 @@ export const createDeleteManyController = <T extends Connection>(connection: T) 
     method: "POST",
     execute: async <K extends any = any>(body: DeleteManyBody<K>[T["type"]]): Promise<DeleteManyResult> => {
       try {
+        const { db, collection } = body;
+
         if (connection.type === "kai") {
-          const { collection, filter, options } = body as DeleteManyBody["kai"];
-          await connection.db().collection(collection).deleteMany(filter, options);
+          const { filter, options } = body as DeleteManyBody["kai"];
+          await connection.db(db).collection(collection).deleteMany(filter, options);
         } else {
-          const { db, table, where } = body as DeleteManyBody["mysql"];
-          const tablePath = connection.tablePath(table, db);
+          const { where } = body as DeleteManyBody["mysql"];
+          const tablePath = connection.tablePath(collection, db);
           await connection.query(`DELETE FROM ${tablePath} WHERE ${where}`);
         }
 

@@ -15,7 +15,7 @@ export const createCreateAndInsertFileEmbeddingsController = <T extends Connecti
       body: CreateAndInsertFileEmbeddingsBody[T["type"]]
     ): Promise<CreateAndInsertFileEmbeddingsResult> => {
       try {
-        const { dataURL, chunkSize = 1000, textField = "text", embeddingField = "embedding" } = body;
+        const { db, collection, dataURL, chunkSize = 1000, textField = "text", embeddingField = "embedding" } = body;
         const fileEmbeddings = await ai.dataURLtoEmbeddings(dataURL, {
           chunkSize,
           textField,
@@ -23,10 +23,8 @@ export const createCreateAndInsertFileEmbeddingsController = <T extends Connecti
         });
 
         if (connection.type === "kai") {
-          const { collection } = body as CreateAndInsertFileEmbeddingsBody["kai"];
-
-          await connection.db().dropCollection(collection);
-          await connection.db().createCollection(collection, {
+          await connection.db(db).dropCollection(collection);
+          await connection.db(db).createCollection(collection, {
             columns: [{ id: embeddingField, type: "LONGBLOB NOT NULL" }]
           } as any);
 
@@ -35,10 +33,9 @@ export const createCreateAndInsertFileEmbeddingsController = <T extends Connecti
             [embeddingField]: ai.embeddingToBuffer(i[embeddingField as keyof typeof i] as number[])
           }));
 
-          await connection.db().collection(collection).insertMany(fileBufferEmbeddings);
+          await connection.db(db).collection(collection).insertMany(fileBufferEmbeddings);
         } else {
-          const { db, table } = body as CreateAndInsertFileEmbeddingsBody["mysql"];
-          const tablePath = connection.tablePath(table, db);
+          const tablePath = connection.tablePath(collection, db);
 
           await connection.execute(`DROP TABLE IF EXISTS ${tablePath}`);
           await connection.execute(`CREATE TABLE IF NOT EXISTS ${tablePath} (
@@ -50,12 +47,10 @@ export const createCreateAndInsertFileEmbeddingsController = <T extends Connecti
           await connection.execute(`TRUNCATE TABLE ${tablePath}`);
 
           for await (const i of fileEmbeddings) {
-            await connection
-              .promise()
-              .execute(`INSERT INTO ${tablePath} (${textField}, ${embeddingField}) VALUES (?, JSON_ARRAY_PACK(?))`, [
-                i[textField],
-                JSON.stringify(i[embeddingField])
-              ]);
+            await connection.execute(
+              `INSERT INTO ${tablePath} (${textField}, ${embeddingField}) VALUES (?, JSON_ARRAY_PACK(?))`,
+              [i[textField], JSON.stringify(i[embeddingField])]
+            );
           }
         }
 

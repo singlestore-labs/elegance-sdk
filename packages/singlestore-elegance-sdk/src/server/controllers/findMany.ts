@@ -10,13 +10,15 @@ export const createFindManyController = <T extends Connection>(connection: T) =>
       try {
         let result: any = undefined;
 
+        const { db, collection } = body;
+
         if (connection.type === "kai") {
-          const { collection, filter = {}, options } = body as FindManyBody["kai"];
-          let _result = connection.db().collection(collection).find(filter, options);
+          const { filter = {}, options } = body as FindManyBody["kai"];
+          let _result = connection.db(db).collection(collection).find(filter, options);
           result = await _result.toArray();
         } else {
-          const { db, table, columns, where, skip, limit } = body as FindManyBody["mysql"];
-          const tablePath = connection.tablePath(table, db);
+          const { columns, where, skip, limit } = body as FindManyBody["mysql"];
+          const tablePath = connection.tablePath(collection, db);
           let query = `SELECT`;
 
           if (columns) {

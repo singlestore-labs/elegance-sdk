@@ -10,17 +10,19 @@ export const createUpdateManyController = <T extends Connection>(connection: T) 
       try {
         let result: any = undefined;
 
+        const { db, collection } = body;
+
         if (connection.type === "kai") {
-          const { collection, filter, update, options, updatedFilter } = body as UpdateManyBody["kai"];
-          await connection.db().collection(collection).updateMany(filter, update, options);
+          const { filter, update, options, updatedFilter } = body as UpdateManyBody["kai"];
+          await connection.db(db).collection(collection).updateMany(filter, update, options);
           const updated = connection
-            .db()
+            .db(db)
             .collection(collection)
             .find(updatedFilter ?? filter);
           result = await updated.toArray();
         } else {
-          const { db, table, set, where, updatedWhere } = body as UpdateManyBody["mysql"];
-          const tablePath = connection.tablePath(table, db);
+          const { set, where, updatedWhere } = body as UpdateManyBody["mysql"];
+          const tablePath = connection.tablePath(collection, db);
 
           await connection.execute(`UPDATE ${tablePath} SET ${set} WHERE ${where}`);
 
