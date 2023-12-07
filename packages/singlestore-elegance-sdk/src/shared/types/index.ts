@@ -51,20 +51,37 @@ export type DefaultError = { status?: number; message: string };
 
 export type ConnectionTypes = "kai" | "mysql";
 
-type ConnectionBase<T extends string, K extends object> = Omit<K, "type"> & { type: T; dbName?: string };
-
 export type KaiConnectionConfig = Omit<MongoClientOptions, "uri" | "database"> & {
   uri: string;
-  database: string;
+  database?: string;
 };
 
 export type MySQLConnectionConfig = MySQLPoolOptions;
 
-export type ConnectionConfigsMap = { kai: KaiConnectionConfig; mysql: MySQLConnectionConfig };
+export type ConnectionConfigsMap = {
+  kai: KaiConnectionConfig;
+  mysql: MySQLConnectionConfig;
+};
 
-export type KaiConnection = ConnectionBase<"kai", { client: MongoClient; db: MongoDB }>;
+type ConnectionBase<T extends string, K extends object> = Omit<K, "type" | "dbName"> & {
+  type: T;
+  dbName?: string;
+};
 
-export type MySQLConnection = ConnectionBase<"mysql", MySQLPool>;
+export type KaiConnection = ConnectionBase<
+  "kai",
+  {
+    client: MongoClient;
+    db: (dbName?: string) => MongoDB;
+  }
+>;
+
+export type MySQLConnection = ConnectionBase<
+  "mysql",
+  Omit<ReturnType<MySQLPool["promise"]>, "tablePath"> & {
+    tablePath: (table: string, dbName?: string) => string;
+  }
+>;
 
 export type Connection<T extends ConnectionTypes = any> = T extends ConnectionTypes
   ? T extends "kai"

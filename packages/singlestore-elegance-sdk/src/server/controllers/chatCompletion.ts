@@ -7,7 +7,7 @@ import type {
 } from "../../shared/types";
 import type { AI } from "../utils";
 import { handleError } from "../../shared/helpers";
-import { createController, getTablePath } from "../utils";
+import { createController } from "../utils";
 
 export const createChatCompletionController = <T extends Connection>(connection: T, ai: AI) => {
   return createController({
@@ -48,14 +48,14 @@ export const createChatCompletionController = <T extends Connection>(connection:
             { $sort: { similarity: -1 } }
           ];
 
-          searchResults = await connection.db.collection(collection).aggregate(pipeline).toArray();
+          searchResults = await connection.db().collection(collection).aggregate(pipeline).toArray();
         } else {
           const { db, table } = body as ChatCompletionBody["mysql"];
-          const tablePath = getTablePath(connection, table, db);
+          const tablePath = connection.tablePath(table, db);
 
           const query = `SELECT ${textField}, DOT_PRODUCT(${embeddingField}, JSON_ARRAY_PACK('[${promptEmbedding}]')) AS similarity FROM ${tablePath} ORDER BY similarity DESC`;
 
-          searchResults = ((await connection.promise().execute(query))[0] as any[]).map(i => {
+          searchResults = ((await connection.execute(query))[0] as any[]).map(i => {
             delete i[embeddingField];
             return i;
           });

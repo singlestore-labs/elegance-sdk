@@ -1,6 +1,6 @@
 import type { Connection, FindManyResult, FindManyBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
-import { createController, getTablePath } from "../utils";
+import { createController } from "../utils";
 
 export const createFindManyController = <T extends Connection>(connection: T) => {
   return createController({
@@ -12,11 +12,11 @@ export const createFindManyController = <T extends Connection>(connection: T) =>
 
         if (connection.type === "kai") {
           const { collection, filter = {}, options } = body as FindManyBody["kai"];
-          let _result = connection.db.collection(collection).find(filter, options);
+          let _result = connection.db().collection(collection).find(filter, options);
           result = await _result.toArray();
         } else {
           const { db, table, columns, where, skip, limit } = body as FindManyBody["mysql"];
-          const tablePath = getTablePath(connection, table, db);
+          const tablePath = connection.tablePath(table, db);
           let query = `SELECT`;
 
           if (columns) {
@@ -30,7 +30,7 @@ export const createFindManyController = <T extends Connection>(connection: T) =>
           if (where) query += ` WHERE ${where}`;
           if (limit) query += ` LIMIT ${limit}`;
           if (skip) query += ` OFFSET ${skip}`;
-          result = (await connection.promise().execute(query))[0];
+          result = (await connection.execute(query))[0];
         }
 
         return result;

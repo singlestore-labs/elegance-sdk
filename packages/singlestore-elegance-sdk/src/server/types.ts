@@ -16,7 +16,8 @@ export type AICustomizers = {
   createChatCompletion?: (body: CreateChatCompletionBody) => Promise<string | null>;
 };
 
-export type AIConfig = ({ openai?: never } | { openai?: OpenAIConfig }) & {
+export type AIConfig = {
+  openai?: OpenAIConfig;
   customizers?: AICustomizers;
 };
 

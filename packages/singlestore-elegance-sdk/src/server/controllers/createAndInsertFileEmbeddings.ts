@@ -5,7 +5,7 @@ import type {
 } from "../../shared/types";
 import type { AI } from "../utils";
 import { handleError } from "../../shared/helpers";
-import { createController, getTablePath } from "../utils";
+import { createController } from "../utils";
 
 export const createCreateAndInsertFileEmbeddingsController = <T extends Connection>(connection: T, ai: AI) => {
   return createController({
@@ -25,8 +25,8 @@ export const createCreateAndInsertFileEmbeddingsController = <T extends Connecti
         if (connection.type === "kai") {
           const { collection } = body as CreateAndInsertFileEmbeddingsBody["kai"];
 
-          await connection.db.dropCollection(collection);
-          await connection.db.createCollection(collection, {
+          await connection.db().dropCollection(collection);
+          await connection.db().createCollection(collection, {
             columns: [{ id: embeddingField, type: "LONGBLOB NOT NULL" }]
           } as any);
 
@@ -35,19 +35,19 @@ export const createCreateAndInsertFileEmbeddingsController = <T extends Connecti
             [embeddingField]: ai.embeddingToBuffer(i[embeddingField as keyof typeof i] as number[])
           }));
 
-          await connection.db.collection(collection).insertMany(fileBufferEmbeddings);
+          await connection.db().collection(collection).insertMany(fileBufferEmbeddings);
         } else {
           const { db, table } = body as CreateAndInsertFileEmbeddingsBody["mysql"];
-          const tablePath = getTablePath(connection, table, db);
+          const tablePath = connection.tablePath(table, db);
 
-          await connection.promise().execute(`DROP TABLE IF EXISTS ${tablePath}`);
-          await connection.promise().execute(`CREATE TABLE IF NOT EXISTS ${tablePath} (
+          await connection.execute(`DROP TABLE IF EXISTS ${tablePath}`);
+          await connection.execute(`CREATE TABLE IF NOT EXISTS ${tablePath} (
             id INT AUTO_INCREMENT PRIMARY KEY,
             ${textField} TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
             ${embeddingField} BLOB
           )`);
 
-          await connection.promise().execute(`TRUNCATE TABLE ${tablePath}`);
+          await connection.execute(`TRUNCATE TABLE ${tablePath}`);
 
           for await (const i of fileEmbeddings) {
             await connection

@@ -6,8 +6,10 @@ export const eleganceServerClientKai = createEleganceServerClient("kai", {
     uri: process.env.KAI_URI ?? "",
     database: DB_NAME
   },
-  openai: {
-    apiKey: process.env.OPENAI_API_KEY
+  ai: {
+    openai: {
+      apiKey: process.env.OPENAI_API_KEY
+    }
   }
 });
 
@@ -18,7 +20,9 @@ export const eleganceServerClientMySQL = createEleganceServerClient("mysql", {
     password: process.env.DB_PASSWORD,
     database: DB_NAME
   },
-  openai: {
-    apiKey: process.env.OPENAI_API_KEY
+  ai: {
+    openai: {
+      apiKey: process.env.OPENAI_API_KEY
+    }
   }
 });
