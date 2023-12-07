@@ -40,7 +40,7 @@ export default function UpdateMany() {
       });
     } else {
       await updateManyMySQL.execute({
-        table: collectionValue,
+        collection: collectionValue,
         where: whereValue,
         set: setValue,
         updatedWhere: updatedWhereValue

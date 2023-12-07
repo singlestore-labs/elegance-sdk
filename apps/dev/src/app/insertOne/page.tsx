@@ -27,7 +27,7 @@ export default function InsertOne() {
     if (connectionTypeValue === "kai") {
       await insertOneKai.execute({ collection: collectionValue, value: _value });
     } else {
-      await insertOneMySQL.execute({ table: collectionValue, value: _value });
+      await insertOneMySQL.execute({ collection: collectionValue, value: _value });
     }
   };
 

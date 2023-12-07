@@ -37,7 +37,7 @@ export default function CreateAndInsertFileEmbeddings() {
         if (connectionTypeValue === "kai") {
           await createAndInsertFileEmbeddingsKai.execute({ ...payload, collection: collectionValue });
         } else {
-          await createAndInsertFileEmbeddingsMySQL.execute({ ...payload, table: collectionValue });
+          await createAndInsertFileEmbeddingsMySQL.execute({ ...payload, collection: collectionValue });
         }
       };
 

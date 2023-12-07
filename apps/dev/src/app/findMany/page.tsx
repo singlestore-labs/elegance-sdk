@@ -33,7 +33,7 @@ export default function FindMany() {
     } else {
       await findManyMySQL.execute({
         db: dbNameValue,
-        table: collectionValue,
+        collection: collectionValue,
         where: whereValue,
         skip: skipValue,
         limit: limitValue

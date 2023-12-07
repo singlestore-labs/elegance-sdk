@@ -27,7 +27,7 @@ export default function DeleteMany() {
     if (connectionTypeValue === "kai") {
       await deleteManyKai.execute({ collection: collectionValue, filter: JSON.parse(filterValue.trim()) });
     } else {
-      await deleteManyMySQL.execute({ table: collectionValue, where: whereValue });
+      await deleteManyMySQL.execute({ collection: collectionValue, where: whereValue });
     }
   };
 

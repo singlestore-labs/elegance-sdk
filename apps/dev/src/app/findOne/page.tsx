@@ -24,7 +24,7 @@ export default function FindOne() {
     if (connectionTypeValue === "kai") {
       await findOneKai.execute({ collection: collectionValue, filter });
     } else {
-      await findOneMySQL.execute({ table: collectionValue, where: whereValue });
+      await findOneMySQL.execute({ collection: collectionValue, where: whereValue });
     }
   };
 

@@ -27,7 +27,7 @@ export default function InsertMany() {
     if (connectionTypeValue === "kai") {
       await insertManyKai.execute({ collection: collectionValue, values: _values });
     } else {
-      await insertManyMySQL.execute({ table: collectionValue, values: _values });
+      await insertManyMySQL.execute({ collection: collectionValue, values: _values });
     }
   };
 

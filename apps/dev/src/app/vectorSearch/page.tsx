@@ -30,7 +30,7 @@ export default function VectorSearch() {
       });
     } else {
       await vectorSearchMySQL.execute({
-        table: collectionValue,
+        collection: collectionValue,
         embeddingField: embeddingFieldValue,
         limit: limitValue,
         query: queryValue

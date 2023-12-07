@@ -36,7 +36,7 @@ export default function ChatCompletion() {
     if (connectionTypeValue === "kai") {
       await chatCompletionKai.execute({ ...payload, collection: collectionValue });
     } else {
-      await chatCompletionMySQL.execute({ ...payload, table: collectionValue });
+      await chatCompletionMySQL.execute({ ...payload, collection: collectionValue });
     }
   };
 
