@@ -35,8 +35,10 @@ export const eleganceServerClient = createEleganceServerClient("mysql", {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME
   },
-  openai: {
-    apiKey: process.env.OPENAI_API_KEY
+  ai: {
+    openai: {
+      apiKey: process.env.OPENAI_API_KEY
+    }
   }
 });
 ```
@@ -174,7 +176,7 @@ Accepts a route and executes the controller for that route.
 - `route: string` - controller route name
 - `body: object` - controller body
 
-#### eleganceServerClient.controllers.insertOne.execute\<T>
+#### eleganceServerClient.controllers.insertOne\<T>
 
 Inserts one record.
 
@@ -182,13 +184,14 @@ Inserts one record.
 
 ```tsx
 body: {
+    db?: string; // Database name
     collection: string; // Collection name
     generateId?: boolean; // Generates the `id` string field
     value: MongoOptionalUnlessRequiredId<T>; // Value to insert
     options?: MongoInsertOneOptions;
   } | {
-    db?: string; // Database name
-    table: string; // Table name
+    db?: string;
+    collection: string;
     generateId?: boolean;
     value: T;
   }
@@ -196,7 +199,7 @@ body: {
 
 **Returns:** `T`
 
-#### eleganceServerClient.controllers.insertMany.execute<Array\<T>>
+#### eleganceServerClient.controllers.insertMany<Array\<T>>
 
 Inserts many records.
 
@@ -204,13 +207,14 @@ Inserts many records.
 
 ```tsx
 body: {
+    db?: string; // Database name
     collection: string; // Collection name
     values: Array<MongoOptionalUnlessRequiredId<T[number]>>; // Values to insert
     generateId?: boolean; // Generates the `id` string field
     options?: MongoBulkWriteOptions;
   } | {
-    db?: string; // Database name
-    table: string; // Table name
+    db?: string;
+    collection: string;
     generateId?: boolean;
     values: Array<T>;
   }
@@ -218,7 +222,7 @@ body: {
 
 **Returns:** `Array<T>`
 
-#### eleganceServerClient.controllers.updateMany.execute<Array\<T>>
+#### eleganceServerClient.controllers.updateMany<Array\<T>>
 
 Updates many records.
 
@@ -226,14 +230,15 @@ Updates many records.
 
 ```tsx
 body: {
+    db?: string; // Database name
     collection: string; // Collection name
     filter: MongoFilter<T[number]>; // Filter to find records to update
     update: MongoUpdateFilter<T[number]>;
     options?: MongoUpdateOptions;
     updatedFilter?: MongoFilter<T[number]>; // Filter to find updated records
   } | {
-    db?: string; // Database name
-    table: string; // Table name
+    db?: string;
+    collection: string;
     where: MySQLWhere; // MySQL WHERE string value to find records to update
     set: MySQLSet; // MySQL SET string value
     updatedWhere: MySQLWhere; // MySQL WHERE string value to find updated records
@@ -242,7 +247,7 @@ body: {
 
 **Returns:** `Array<T>`
 
-#### eleganceServerClient.controllers.deleteMany.execute\<T>
+#### eleganceServerClient.controllers.deleteMany\<T>
 
 Deletes many records.
 
@@ -250,19 +255,20 @@ Deletes many records.
 
 ```tsx
 body: {
+    db?: string; // Database name
     collection: string; // Collection name
     filter: MongoFilter<T>; // Filter to find records to delete
     options?: MongoDeleteOptions;
   } | {
-    db?: string; // Database name
-    table: string; // Table name
+    db?: string;
+    collection: string;
     where: MySQLWhere; // MySQL WHERE string value to find records to delete
   }
 ```
 
 **Returns:** `{ message: string }`
 
-#### eleganceServerClient.controllers.findOne.execute\<T>
+#### eleganceServerClient.controllers.findOne\<T>
 
 Gets one record.
 
@@ -270,12 +276,13 @@ Gets one record.
 
 ```tsx
 body: {
+    db?: string; // Database name
     collection: string; // Collection name
     filter?: MongoFilter<T>; // Filter to find a record
     options?: MongoFindOptions;
   } | {
-    db?: string; // Database name
-    table: string; // Table name
+    db?: string;
+    collection: string;
     columns?: string[]; // Columns to get by default *
     where?: MySQLWhere; // MySQL WHERE string value to find a record
   }
@@ -283,7 +290,7 @@ body: {
 
 **Returns:** `T`
 
-#### eleganceServerClient.controllers.findMany.execute<Array\<T>>
+#### eleganceServerClient.controllers.findMany<Array\<T>>
 
 Gets many records.
 
@@ -291,12 +298,13 @@ Gets many records.
 
 ```tsx
 body: {
+    db?: string; // Database name
     collection: string; // Collection name
     filter?: MongoFilter<T[number]>; // Filter to find records
     options?: MongoFindOptions;
   } | {
-    db?: string; // Database name
-    table: string; // Table name
+    db?: string;
+    collection: string;
     columns?: string[]; // Columns to get by default *
     where?: MySQLWhere; // MySQL WHERE string value to find records
     skip?: number;
@@ -306,7 +314,7 @@ body: {
 
 **Returns:** `Array<object>`
 
-#### eleganceServerClient.controllers.query.execute<Array\<T>>
+#### eleganceServerClient.controllers.query<Array\<T>>
 
 Executes MySQL or aggregate query.
 
@@ -314,6 +322,7 @@ Executes MySQL or aggregate query.
 
 ```tsx
 body: {
+    db?: string; // Database name
     collection: string; // Collection name
     pipeline: object[]; // Aggregate pipeline
     options?: MongoAggregateOptions;
@@ -324,7 +333,7 @@ body: {
 
 **Returns:** `Array<T>`
 
-#### eleganceServerClient.controllers.createEmbedding.execute
+#### eleganceServerClient.controllers.createEmbedding
 
 Creates embedding.
 
@@ -338,7 +347,7 @@ body: {
 
 **Returns:** `Array<number>`
 
-#### eleganceServerClient.controllers.vectorSearch.execute
+#### eleganceServerClient.controllers.vectorSearch
 
 Performs vector search in the collection based on the query.
 
@@ -346,13 +355,14 @@ Performs vector search in the collection based on the query.
 
 ```tsx
 body: {
+    db?: string; // Database name
     collection: string; // Collection name
     embeddingField: string; // Field name with the embedding by which to perform the search
     query: string; // Search query
     limit?: number; // Number of records to get
   } | {
-    db?: string; // Database name
-    table: string; // Table name
+    db?: string;
+    collection: string;
     embeddingField: string;
     query: string;
     limit?: number;
@@ -361,7 +371,7 @@ body: {
 
 **Returns:** `Array<object>`
 
-#### eleganceServerClient.controllers.chatCompletion.execute
+#### eleganceServerClient.controllers.chatCompletion
 
 Accepts a prompt, performs vector search, and creates chat completion for the found records.
 
@@ -369,6 +379,7 @@ Accepts a prompt, performs vector search, and creates chat completion for the fo
 
 ```tsx
 body: {
+    db?: string; // Database name
     collection: string; // Collection name
     prompt: string; // Prompt text
     model?: string;
@@ -381,8 +392,8 @@ body: {
     maxContextLength?: number;
     temperature?: CreateChatCompletionBody["temperature"];
   } | {
-    db?: string; // Database name
-    table: string; // Table name
+    db?: string;
+    collection: string;
     prompt: string;
     model?: string;
     textField?: string;
@@ -405,7 +416,7 @@ body: {
 }
 ```
 
-#### eleganceServerClient.controllers.createFileEmbeddings.execute
+#### eleganceServerClient.controllers.createFileEmbeddings
 
 Accepts a CSV or PDF file as a DataURL, splits it into chunks and creates embeddings.
 
@@ -422,7 +433,7 @@ body: {
 
 **Returns:** `Array<{ text: string; embedding: number[]; }>`
 
-#### eleganceServerClient.controllers.createAndInsertFileEmbeddings.execute
+#### eleganceServerClient.controllers.createAndInsertFileEmbeddings
 
 Accepts a CSV or PDF file as a DataURL, splits it into chunks, creates embeddings, and inserts them into a database.
 
@@ -430,14 +441,15 @@ Accepts a CSV or PDF file as a DataURL, splits it into chunks, creates embedding
 
 ```tsx
 body: {
+    db?: string; // Database name
     collection: string; // Collection name
     dataURL: string; // CSV or PDF file DataURL
     textField?: string; // Field name in which to save a chunk text
     embeddingField?: string; // Field name in which to save an embedding
     chunkSize?: number;
   } | {
-    db?: string; // Database name
-    table: string; // Table name
+    db?: string;
+    collection: string;
     dataURL: string;
     textField?: string;
     embeddingField?: string;
