@@ -1,74 +1,52 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { CollectionOrTableField } from "@/components/CollectionOrTableField";
-import { ConnectionTypeSelect } from "@/components/ConnectionTypeSelect";
-import { eleganceClientKai, eleganceClientMySQL } from "@/services/eleganceClient";
-import { PageContent } from "@/components/PageContent";
-import { Button } from "@/components/Button";
+import { useState } from "react";
+import { ConnectionTypes } from "@singlestore/elegance-sdk/types";
 
-const collections = {
-  kai: "test_insert_kai",
-  mysql: "test_insert_mysql"
-};
+import { eleganceClientKai, eleganceClientMySQL } from "@/services/eleganceClient";
+import { Button } from "@/components/Button";
+import { Checkbox } from "@/components/Checkbox";
+import { CollectionField } from "@/components/CollectionField";
+import { ConnectionTypeSelect } from "@/components/ConnectionTypeSelect";
+import { DatabaseField } from "@/components/DatabaseField";
+import { PageContent } from "@/components/PageContent";
+import { State } from "@/components/State";
+import { Textarea } from "@/components/Textarea";
 
 export default function InsertOne() {
   const insertOneKai = eleganceClientKai.hooks.useInsertOne();
   const insertOneMySQL = eleganceClientMySQL.hooks.useInsertOne();
-  const [connectionTypeValue, setConnectionTypeValue] = useState<keyof typeof collections>("kai");
-  const [collectionValue, setCollectionValue] = useState(collections[connectionTypeValue]);
-  const [value, setValue] = useState(JSON.stringify({ name: "" }, null, 2));
-  const activeState = connectionTypeValue === "kai" ? insertOneKai : insertOneMySQL;
+  const [connectionType, setConnectionType] = useState<ConnectionTypes>("mysql");
+  const [db, setDb] = useState("");
+  const [collection, setCollection] = useState("users");
+  const [value, setValue] = useState(JSON.stringify({ reviews: [] }, null, 2));
+  const [generateId, setGenerateId] = useState(true);
 
   const handleSubmit: JSX.IntrinsicElements["form"]["onSubmit"] = async event => {
     event.preventDefault();
     const _value = value ? JSON.parse(value.trim()) : undefined;
 
-    if (connectionTypeValue === "kai") {
-      await insertOneKai.execute({ collection: collectionValue, value: _value });
+    if (connectionType === "kai") {
+      await insertOneKai.execute({ db, collection, generateId, value: _value });
     } else {
-      await insertOneMySQL.execute({ collection: collectionValue, value: _value });
+      await insertOneMySQL.execute({ db, collection, generateId, value: _value });
     }
   };
-
-  useEffect(() => {
-    setCollectionValue(collections[connectionTypeValue]);
-  }, [connectionTypeValue]);
 
   return (
     <PageContent heading="Feature: InsertOne">
       <form className="mt-12 flex flex-col gap-4" onSubmit={handleSubmit}>
-        <ConnectionTypeSelect value={connectionTypeValue} onChange={v => setConnectionTypeValue(v as any)} />
-
-        <CollectionOrTableField
-          connectionType={connectionTypeValue}
-          value={collectionValue}
-          onChange={setCollectionValue}
-        />
-
-        <label className="w-full ">
-          <span className="mb-2 inline-block">Value</span>
-          <textarea
-            name="value"
-            placeholder="Enter value"
-            rows={5}
-            value={value}
-            onChange={event => setValue(event.target.value)}
-            className="w-full rounded border px-4 py-2 "
-          />
-        </label>
-
-        <Button type="submit" className="ml-auto" disabled={activeState.isLoading}>
+        <ConnectionTypeSelect value={connectionType} onChange={setConnectionType} />
+        <DatabaseField value={db} onChange={setDb} />
+        <CollectionField value={collection} onChange={setCollection} />
+        <Textarea label="Value" value={value} onChange={setValue} />
+        <Checkbox label="Generate ID" value={generateId} onChange={setGenerateId} />
+        <Button type="submit" className="ml-auto">
           Submit
         </Button>
       </form>
 
-      <div className="mt-8">
-        <h2 className="text-xl">Feature state</h2>
-        <pre className="mt-8 max-h-[512px] w-full overflow-x-auto overflow-y-auto whitespace-pre-wrap rounded border   p-4">
-          {JSON.stringify(activeState, null, 2)}
-        </pre>
-      </div>
+      <State connectionType={connectionType} mysqlState={insertOneMySQL} kaiState={insertOneKai} />
     </PageContent>
   );
 }

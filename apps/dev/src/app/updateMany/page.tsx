@@ -1,149 +1,81 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { CollectionOrTableField } from "@/components/CollectionOrTableField";
-import { ConnectionTypeSelect } from "@/components/ConnectionTypeSelect";
-import { eleganceClientKai, eleganceClientMySQL } from "@/services/eleganceClient";
-import { PageContent } from "@/components/PageContent";
-import { Button } from "@/components/Button";
+import { useState } from "react";
+import { ConnectionTypes } from "@singlestore/elegance-sdk/types";
 
-const collections = {
-  kai: "test_insert_kai",
-  mysql: "test_insert_mysql"
-};
+import { eleganceClientKai, eleganceClientMySQL } from "@/services/eleganceClient";
+import { Button } from "@/components/Button";
+import { CollectionField } from "@/components/CollectionField";
+import { ConnectionTypeSelect } from "@/components/ConnectionTypeSelect";
+import { DatabaseField } from "@/components/DatabaseField";
+import { Input } from "@/components/Input";
+import { PageContent } from "@/components/PageContent";
+import { State } from "@/components/State";
+import { Textarea } from "@/components/Textarea";
 
 export default function UpdateMany() {
   const updateManyKai = eleganceClientKai.hooks.useUpdateMany();
   const updateManyMySQL = eleganceClientMySQL.hooks.useUpdateMany();
-  const [connectionTypeValue, setConnectionTypeValue] = useState<"kai" | "mysql">("kai");
-  const [collectionValue, setCollectionValue] = useState(collections[connectionTypeValue]);
+  const [connectionType, setConnectionType] = useState<ConnectionTypes>("mysql");
+  const [db, setDb] = useState("");
+  const [collection, setCollection] = useState("users");
+  const [filter, setFilter] = useState(JSON.stringify({ id: "657228661431372aef42ddcd" }, null, 2));
+  const [update, setUpdate] = useState(JSON.stringify({ $set: { reviews: [1, 2, 3] } }, null, 2));
+  const [updatedFilter, setUpdatedFilter] = useState(JSON.stringify({ id: "657228661431372aef42ddcd" }, null, 2));
 
-  const [filterValue, setFilterValue] = useState(JSON.stringify({ name: "Polaris" }, null, 2));
-  const [updateValue, setUpdateValue] = useState(JSON.stringify({ $set: { name: "Updated Name" } }, null, 2));
-  const [updatedFilterValue, setUpdatedFilterValue] = useState(JSON.stringify({ name: "Updated Name" }, null, 2));
-
-  const [whereValue, setWhereValue] = useState('name = "Polaris"');
-  const [setValue, setSetValue] = useState('name = "Updated Name"');
-  const [updatedWhereValue, setUpdatedWhereValue] = useState('name = "Updated Name"');
-
-  const activeState = connectionTypeValue === "kai" ? updateManyKai : updateManyMySQL;
+  const [where, setWhere] = useState('id = "657228391431372aef42ddc8"');
+  const [set, setSet] = useState('reviews = "[1,2,3]"');
+  const [updatedWhere, setUpdatedWhere] = useState('id = "657228391431372aef42ddc8"');
 
   const handleSubmit: JSX.IntrinsicElements["form"]["onSubmit"] = async event => {
     event.preventDefault();
 
-    if (connectionTypeValue === "kai") {
+    if (connectionType === "kai") {
       await updateManyKai.execute({
-        collection: collectionValue,
-        filter: JSON.parse(filterValue.trim()),
-        update: JSON.parse(updateValue.trim()),
-        updatedFilter: JSON.parse(updatedFilterValue.trim())
+        db,
+        collection,
+        filter: JSON.parse(filter.trim()),
+        update: JSON.parse(update.trim()),
+        updatedFilter: JSON.parse(updatedFilter.trim())
       });
     } else {
       await updateManyMySQL.execute({
-        collection: collectionValue,
-        where: whereValue,
-        set: setValue,
-        updatedWhere: updatedWhereValue
+        db,
+        collection,
+        where,
+        set,
+        updatedWhere
       });
     }
   };
 
-  useEffect(() => {
-    setCollectionValue(collections[connectionTypeValue]);
-  }, [connectionTypeValue]);
-
   return (
     <PageContent heading="Feature: UpdateMany">
       <form className="mt-12 flex flex-col gap-4 " onSubmit={handleSubmit}>
-        <ConnectionTypeSelect value={connectionTypeValue} onChange={v => setConnectionTypeValue(v as any)} />
+        <ConnectionTypeSelect value={connectionType} onChange={setConnectionType} />
+        <DatabaseField value={db} onChange={setDb} />
+        <CollectionField value={collection} onChange={setCollection} />
 
-        <CollectionOrTableField
-          connectionType={connectionTypeValue}
-          value={collectionValue}
-          onChange={setCollectionValue}
-        />
-
-        {connectionTypeValue === "kai" ? (
+        {connectionType === "kai" ? (
           <>
-            <label className="w-full ">
-              <span className="mb-2 inline-block">Filter</span>
-              <textarea
-                placeholder="Enter filter"
-                rows={5}
-                value={filterValue}
-                onChange={event => setFilterValue(event.target.value)}
-                className="w-full rounded border px-4 py-2 "
-              />
-            </label>
-
-            <label className="w-full ">
-              <span className="mb-2 inline-block">Update</span>
-              <textarea
-                placeholder="Enter updated value"
-                rows={5}
-                value={updateValue}
-                onChange={event => setUpdateValue(event.target.value)}
-                className="w-full rounded border px-4 py-2 "
-              />
-            </label>
-
-            <label className="w-full ">
-              <span className="mb-2 inline-block">Updated Filter</span>
-              <textarea
-                placeholder="Enter updated filter"
-                rows={5}
-                value={updatedFilterValue}
-                onChange={event => setUpdatedFilterValue(event.target.value)}
-                className="w-full rounded border px-4 py-2 "
-              />
-            </label>
+            <Textarea label="Filter" value={filter} onChange={setFilter} />
+            <Textarea label="Update" value={update} onChange={setUpdate} />
+            <Textarea label="Updated Filter" value={updatedFilter} onChange={setUpdatedFilter} />
           </>
         ) : (
           <>
-            <label className="w-full ">
-              <span className="mb-2 inline-block">Where</span>
-              <input
-                placeholder="Enter where query"
-                value={whereValue}
-                onChange={event => setWhereValue(event.target.value)}
-                className="w-full rounded border px-4 py-2 "
-              />
-            </label>
-
-            <label className="w-full ">
-              <span className="mb-2 inline-block">Set</span>
-              <textarea
-                placeholder="Enter set value"
-                rows={5}
-                value={setValue}
-                onChange={event => setSetValue(event.target.value)}
-                className="w-full rounded border px-4 py-2 "
-              />
-            </label>
-
-            <label className="w-full ">
-              <span className="mb-2 inline-block">Updated where</span>
-              <input
-                placeholder="Enter updated where query"
-                value={updatedWhereValue}
-                onChange={event => setUpdatedWhereValue(event.target.value)}
-                className="w-full rounded border px-4 py-2 "
-              />
-            </label>
+            <Input label="Where" value={where} onChange={setWhere} />
+            <Input label="Set" value={set} onChange={setSet} />
+            <Input label="Updated where" value={updatedWhere} onChange={setUpdatedWhere} />
           </>
         )}
 
-        <Button type="submit" className="ml-auto" disabled={activeState.isLoading}>
+        <Button type="submit" className="ml-auto">
           Submit
         </Button>
       </form>
 
-      <div className="mt-8">
-        <h2 className="text-xl">Feature state</h2>
-        <pre className="mt-8 max-h-[512px] w-full overflow-x-auto overflow-y-auto whitespace-pre-wrap rounded border   p-4">
-          {JSON.stringify(activeState, null, 2)}
-        </pre>
-      </div>
+      <State connectionType={connectionType} mysqlState={updateManyMySQL} kaiState={updateManyKai} />
     </PageContent>
   );
 }

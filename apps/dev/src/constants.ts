@@ -1,1 +1,2 @@
-export const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME ?? "";
+export const DB_NAME_KAI = "dev_kai";
+export const DB_NAME_MYSQL = "dev_mysql";
