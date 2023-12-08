@@ -4,7 +4,7 @@ import type {
   CreateAndInsertFileEmbeddingsRequestBody,
   RequestInit
 } from "../../shared/types";
-import { Fetcher } from "../utils";
+import { Fetcher } from "../utils/fetcher";
 import { toDataURL } from "../utils/helpers";
 
 export function createAndInsertFileEmbeddingsRequest(fetcher: Fetcher) {

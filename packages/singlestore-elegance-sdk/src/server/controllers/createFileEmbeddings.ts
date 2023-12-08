@@ -1,5 +1,5 @@
 import type { CreateFileEmbeddingsBody, CreateFileEmbeddingsResult } from "../../shared/types";
-import type { AI } from "../utils";
+import type { AI } from "../ai";
 import { handleError } from "../../shared/helpers";
 
 export const createCreateFileEmbeddingsController = (ai: AI) => {

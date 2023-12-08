@@ -22,7 +22,7 @@ import type {
   CreateEmbeddingBody,
   RequestInit
 } from "../../shared/types";
-import type { Fetcher } from "../utils";
+import type { Fetcher } from "../utils/fetcher";
 import { createAndInsertFileEmbeddingsRequest } from "./createAndInsertFileEmbeddings";
 import { createFileEmbeddingsRequest } from "./createFileEmbeddings";
 

@@ -3,7 +3,7 @@ import type {
   CreateAndInsertFileEmbeddingsBody,
   CreateAndInsertFileEmbeddingsResult
 } from "../../shared/types";
-import type { AI } from "../utils";
+import type { AI } from "../ai";
 import { handleError } from "../../shared/helpers";
 
 export const createCreateAndInsertFileEmbeddingsController = <T extends Connection>(connection: T, ai: AI) => {

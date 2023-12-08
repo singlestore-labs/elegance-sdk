@@ -1,5 +1,5 @@
 import type { ConnectionTypes } from "../shared/types";
-import { createFetcher } from "./utils";
+import { createFetcher } from "./utils/fetcher";
 import { createHooks } from "./hooks";
 import { createRequests } from "./requests";
 

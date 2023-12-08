@@ -1,5 +1,5 @@
 import type { Connection } from "../../shared/types";
-import type { AI } from "../utils";
+import type { AI } from "../ai";
 import { createCreateAndInsertFileEmbeddingsController } from "./createAndInsertFileEmbeddings";
 import { createFindManyController } from "./findMany";
 import { createFindOneController } from "./findOne";

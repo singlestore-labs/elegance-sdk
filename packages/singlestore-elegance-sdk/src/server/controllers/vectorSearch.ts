@@ -1,5 +1,5 @@
 import type { Connection, VectorSearchResult, VectorSearchBody, AggregateQuery } from "../../shared/types";
-import type { AI } from "../utils";
+import type { AI } from "../ai";
 import { handleError } from "../../shared/helpers";
 
 export const createVectorSearchController = <T extends Connection>(connection: T, ai: AI) => {

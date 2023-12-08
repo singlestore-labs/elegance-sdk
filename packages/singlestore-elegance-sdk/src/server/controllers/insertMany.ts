@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import type { Connection, InsertManyResult, InsertManyBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
-import { toInsertValuesQuery } from "../utils";
+import { toInsertValuesQuery } from "../utils/mysql";
 
 export const createInsertManyController = <T extends Connection>(connection: T) => {
   return async <R extends InsertManyResult = InsertManyResult>(body: InsertManyBody<R>[T["type"]]): Promise<R> => {

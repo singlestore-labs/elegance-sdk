@@ -12,7 +12,7 @@ import type {
 
 import type { ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
 
-import type { CreateEmbedding, Embedding } from "./ai";
+import type { EmbeddingInput, Embedding } from "./ai";
 
 export type {
   MongoFilter,
@@ -107,8 +107,7 @@ export type FindManyBody<T extends FindManyResult = FindManyResult> = ByConnecti
   { columns?: string[]; where?: MySQLWhere; skip?: number; limit?: number }
 >;
 
-export type CreateEmbeddingResult = ReturnType<CreateEmbedding>;
-export type CreateEmbeddingBody = { input: Parameters<CreateEmbedding>[0] };
+export type CreateEmbeddingBody = { input: EmbeddingInput };
 
 export type VectorSearchResult = any[];
 export type VectorSearchBody = WithDb<{
@@ -149,7 +148,6 @@ export type CreateAndInsertFileEmbeddingsBody = WithDb<{
   chunkSize?: number;
 }>;
 
-export type CreateChatCompletionResult = { content: string };
 export type CreateChatCompletionBody = {
   systemRole?: string;
   prompt?: string;

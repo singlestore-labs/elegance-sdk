@@ -1,8 +1,10 @@
 import type { AIConfig, ConnectionConfigsMap, ConnectionTypes } from "../shared/types";
 import { createControllers } from "./controllers";
-import { createAI, createConnection } from "./utils";
+import { createConnection } from "./utils/connection";
+import { createAI } from "./ai";
 
 export { ObjectId } from "mongodb";
+export { OpenAI } from "openai";
 
 export type ServerClientConfig<T extends ConnectionTypes> = {
   connection: ConnectionConfigsMap[T];

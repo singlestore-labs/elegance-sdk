@@ -5,7 +5,7 @@ import type {
   AggregateQuery,
   CreateChatCompletionBody
 } from "../../shared/types";
-import type { AI } from "../utils";
+import type { AI } from "../ai";
 import { handleError } from "../../shared/helpers";
 
 export const createChatCompletionController = <T extends Connection>(connection: T, ai: AI) => {
@@ -80,14 +80,10 @@ export const createChatCompletionController = <T extends Connection>(connection:
 
       const content = await ai.createChatCompletion({
         prompt,
-        promptEmbedding,
         model,
         temperature,
-        searchResults,
         messages,
-        maxTokens,
-        maxContextLength,
-        minSimilarity
+        maxTokens
       });
 
       result = { content: content ?? "", context };
