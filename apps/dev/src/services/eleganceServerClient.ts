@@ -1,4 +1,5 @@
-import { AIConfig, createEleganceServerClient } from "@singlestore/elegance-sdk/server";
+import { createEleganceServerClient } from "@singlestore/elegance-sdk/server";
+import { AIConfig } from "@singlestore/elegance-sdk/types";
 import { DB_NAME_KAI, DB_NAME_MYSQL } from "@/constants";
 
 const ai: AIConfig = {

@@ -19,9 +19,9 @@ import type {
   DeleteManyBody,
   DeleteManyResult,
   CreateEmbeddingResult,
-  CreateEmbeddingBody
+  CreateEmbeddingBody,
+  RequestInit
 } from "../../shared/types";
-import type { RequestInit } from "../types";
 import type { Fetcher } from "../utils";
 import { createAndInsertFileEmbeddingsRequest } from "./createAndInsertFileEmbeddings";
 import { createFileEmbeddingsRequest } from "./createFileEmbeddings";

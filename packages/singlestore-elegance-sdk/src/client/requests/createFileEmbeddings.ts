@@ -1,5 +1,9 @@
-import { CreateFileEmbeddingsBody, CreateFileEmbeddingsResult } from "../../shared/types";
-import { CreateFileEmbeddingsRequestBody, RequestInit } from "../types";
+import type {
+  CreateFileEmbeddingsBody,
+  CreateFileEmbeddingsResult,
+  CreateFileEmbeddingsRequestBody,
+  RequestInit
+} from "../../shared/types";
 import { Fetcher } from "../utils";
 import { toDataURL } from "../utils/helpers";
 

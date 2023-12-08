@@ -1,4 +1,4 @@
-import type { ClientConfig } from "../types";
+import { ClientConfig } from "../index";
 
 export type Fetcher = ReturnType<typeof createFetcher>;
 

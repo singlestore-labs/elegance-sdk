@@ -1,6 +1,5 @@
 import OpenAI from "openai";
-import type { CreateChatCompletionBody, Embedding, EmbeddingInput } from "../../shared/types";
-import type { AIConfig } from "../types";
+import type { CreateChatCompletionBody, Embedding, EmbeddingInput, AIConfig } from "../../shared/types";
 import { csvStringToArray } from "./csv";
 import { decodeDataURL } from "./dataURL";
 import { pdfBufferToString } from "./pdf";

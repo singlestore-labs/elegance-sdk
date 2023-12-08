@@ -1,14 +1,21 @@
-import type { ConnectionTypes } from "../shared/types";
-import type { EleganceServerClientConfig } from "./types";
+import type { AIConfig, ConnectionConfigsMap, ConnectionTypes } from "../shared/types";
 import { createControllers } from "./controllers";
 import { createAI, createConnection } from "./utils";
 
 export { ObjectId } from "mongodb";
-export * from "./types";
+
+export type ServerClientConfig<T extends ConnectionTypes> = {
+  connection: ConnectionConfigsMap[T];
+  ai?: AIConfig;
+};
+
+export type EleganceServerClient<T extends ConnectionTypes> = ReturnType<typeof createEleganceServerClient<T>>;
+
+export type Routes = keyof ReturnType<typeof createControllers>;
 
 export function createEleganceServerClient<
   T extends ConnectionTypes,
-  C extends EleganceServerClientConfig<T> = EleganceServerClientConfig<T>
+  C extends ServerClientConfig<T> = ServerClientConfig<T>
 >(type: T, config: C) {
   const connection = createConnection(type, config.connection);
   const ai = createAI(config.ai);

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ConnectionTypes } from "@singlestore/elegance-sdk/types";
-import { CreateAndInsertFileEmbeddingsRequestBody } from "@singlestore/elegance-sdk";
+import { ConnectionTypes, CreateAndInsertFileEmbeddingsRequestBody } from "@singlestore/elegance-sdk/types";
 
 import { eleganceClientKai, eleganceClientMySQL } from "@/services/eleganceClient";
 import { Button } from "@/components/Button";
