@@ -173,6 +173,8 @@ export type VectorSearchBody = WithDb<{
   query: string;
   embeddingField: string;
   limit?: number;
+  minSimilarity?: number;
+  includeEmbedding?: boolean;
 }>;
 
 export type ChatCompletionResult = {

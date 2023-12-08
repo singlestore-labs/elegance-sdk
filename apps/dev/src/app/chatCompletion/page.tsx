@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ConnectionTypes } from "@singlestore/elegance-sdk/types";
+import { ChatCompletionBody, ConnectionTypes } from "@singlestore/elegance-sdk/types";
 
 import { eleganceClientKai, eleganceClientMySQL } from "@/services/eleganceClient";
 import { Button } from "@/components/Button";
@@ -31,7 +31,7 @@ export default function ChatCompletion() {
     event.preventDefault();
     if (!prompt) return;
 
-    const payload = {
+    const payload: ChatCompletionBody = {
       db,
       collection,
       textField,
@@ -81,7 +81,7 @@ export default function ChatCompletion() {
           label="Min similarity"
           type="number"
           min={0.0}
-          step={0.0000000000000001}
+          step={0.01}
           value={minSimilarity}
           onChange={value => setMinSimilarity(+value)}
         />

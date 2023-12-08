@@ -359,7 +359,9 @@ body: {
     collection: string; // Collection name
     embeddingField: string; // Field name with the embedding by which to perform the search
     query: string; // Search query
+    minSimilarity?: number; // Minimum similarity number to filter search results, used to create a chat completion.
     limit?: number; // Number of records to get
+    includeEmbedding?: boolean;
   }
 ```
 
