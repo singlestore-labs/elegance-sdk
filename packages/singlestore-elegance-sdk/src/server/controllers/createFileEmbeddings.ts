@@ -2,7 +2,7 @@ import type { CreateFileEmbeddingsBody, CreateFileEmbeddingsResult } from "../..
 import type { AI } from "../ai";
 import { handleError } from "../../shared/helpers";
 
-export const createCreateFileEmbeddingsController = (ai: AI) => {
+export const createFileEmbeddingsController = (ai: AI) => {
   return async (body: CreateFileEmbeddingsBody): Promise<CreateFileEmbeddingsResult> => {
     try {
       if (!body.dataURL) throw new Error("dataURL is required field");

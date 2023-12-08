@@ -3,7 +3,7 @@ import type { Connection, InsertManyResult, InsertManyBody } from "../../shared/
 import { handleError } from "../../shared/helpers";
 import { toInsertValuesQuery } from "../utils/mysql";
 
-export const createInsertManyController = <T extends Connection>(connection: T) => {
+export const insertManyController = <T extends Connection>(connection: T) => {
   return async <R extends InsertManyResult = InsertManyResult>(body: InsertManyBody<R>[T["type"]]): Promise<R> => {
     try {
       let result: any = undefined;

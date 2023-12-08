@@ -3,7 +3,7 @@ import type { Connection, InsertOneResult, InsertOneBody } from "../../shared/ty
 import { handleError } from "../../shared/helpers";
 import { toInsertValuesQuery } from "../utils/mysql";
 
-export const createInsertOneController = <T extends Connection>(connection: T) => {
+export const insertOneController = <T extends Connection>(connection: T) => {
   return async <R extends InsertOneResult = InsertOneResult>(body: InsertOneBody<R>[T["type"]]): Promise<R> => {
     try {
       let result: any = undefined;

@@ -8,8 +8,8 @@ import type {
   QueryResult,
   VectorSearchBody,
   VectorSearchResult,
-  ChatCompletionBody,
-  ChatCompletionResult,
+  SearchChatCompletionBody,
+  SearchChatCompletionResult,
   InsertOneBody,
   InsertOneResult,
   InsertManyBody,
@@ -20,7 +20,9 @@ import type {
   DeleteManyResult,
   CreateEmbeddingResult,
   CreateEmbeddingBody,
-  RequestInit
+  RequestInit,
+  CreateChatCompletionResult,
+  CreateChatCompletionBody
 } from "../../shared/types";
 import type { Fetcher } from "../utils/fetcher";
 import { createAndInsertFileEmbeddingsRequest } from "./createAndInsertFileEmbeddings";
@@ -71,15 +73,22 @@ export function createRequests<T extends ConnectionTypes>(fetcher: Fetcher) {
 
     createAndInsertFileEmbeddings: createAndInsertFileEmbeddingsRequest(fetcher),
 
-    vectorSearch: <R extends VectorSearchResult = VectorSearchResult>(body: VectorSearchBody, init?: RequestInit) => {
-      return _fetch<R>("/vectorSearch", body, init);
-    },
-
-    chatCompletion: <R extends ChatCompletionResult = ChatCompletionResult>(
-      body: ChatCompletionBody,
+    createChatCompletion: <R extends CreateChatCompletionResult = CreateChatCompletionResult>(
+      body: CreateChatCompletionBody,
       init?: RequestInit
     ) => {
-      return _fetch<R>("/chatCompletion", body, init);
+      return _fetch<R>("/createChatCompletion", body, init);
+    },
+
+    searchChatCompletion: <R extends SearchChatCompletionResult = SearchChatCompletionResult>(
+      body: SearchChatCompletionBody,
+      init?: RequestInit
+    ) => {
+      return _fetch<R>("/searchChatCompletion", body, init);
+    },
+
+    vectorSearch: <R extends VectorSearchResult = VectorSearchResult>(body: VectorSearchBody, init?: RequestInit) => {
+      return _fetch<R>("/vectorSearch", body, init);
     }
   };
 }

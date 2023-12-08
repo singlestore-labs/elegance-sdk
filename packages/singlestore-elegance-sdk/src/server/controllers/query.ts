@@ -1,7 +1,7 @@
 import type { Connection, QueryResult, QueryBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
 
-export const createQueryController = <T extends Connection>(connection: T) => {
+export const queryController = <T extends Connection>(connection: T) => {
   return async <R extends QueryResult = QueryResult>(body: QueryBody[T["type"]]): Promise<R> => {
     try {
       let result: any = undefined;

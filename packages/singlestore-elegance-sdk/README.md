@@ -367,7 +367,7 @@ body: {
 
 **Returns:** `Array<object>`
 
-#### eleganceServerClient.controllers.chatCompletion
+#### eleganceServerClient.controllers.searchChatCompletion
 
 Accepts a prompt, performs vector search, and creates chat completion for the found records.
 
@@ -385,8 +385,8 @@ body: {
     systemRole?: string; // Initial system role
     messages?: CreateChatCompletionBody["messages"]; // Additional messages after the prompt message
     maxTokens?: CreateChatCompletionBody["max_tokens"];
-    maxContextLength?: number;
     temperature?: CreateChatCompletionBody["temperature"];
+    maxContextLength?: number;
   }
 ```
 

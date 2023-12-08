@@ -1,7 +1,7 @@
 import type { Connection, FindOneResult, FindOneBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
 
-export const createFindOneController = <T extends Connection>(connection: T) => {
+export const findOneController = <T extends Connection>(connection: T) => {
   return async <R extends FindOneResult = FindOneResult>(body: FindOneBody<R>[T["type"]]): Promise<R> => {
     try {
       let result: any = undefined;

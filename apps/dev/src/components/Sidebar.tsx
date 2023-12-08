@@ -16,10 +16,11 @@ const links: { href: string; children: ReactNode }[] = [
   { href: "/findOne", children: "Find one" },
   { href: "/findMany", children: "Find many" },
   { href: "/createEmbedding", children: "Create embedding" },
-  { href: "/vectorSearch", children: "Vector search" },
-  { href: "/chatCompletion", children: "Chat completion" },
   { href: "/createFileEmbeddings", children: "Create file embeddings" },
-  { href: "/createAndInsertFileEmbeddings", children: "Create and insert file embeddings" }
+  { href: "/createAndInsertFileEmbeddings", children: "Create and insert file embeddings" },
+  { href: "/createChatCompletion", children: "Create chat completion" },
+  { href: "/searchChatCompletion", children: "Search chat completion" },
+  { href: "/vectorSearch", children: "Vector search" }
 ];
 
 export function Sidebar({ className, ...props }: SidebarProps) {

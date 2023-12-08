@@ -1,7 +1,7 @@
 import type { Connection, DeleteManyResult, DeleteManyBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
 
-export const createDeleteManyController = <T extends Connection>(connection: T) => {
+export const deleteManyController = <T extends Connection>(connection: T) => {
   return async <K extends any = any>(body: DeleteManyBody<K>[T["type"]]): Promise<DeleteManyResult> => {
     try {
       const { db, collection } = body;

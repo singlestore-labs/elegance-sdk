@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChatCompletionBody, ConnectionTypes } from "@singlestore/elegance-sdk/types";
+import { SearchChatCompletionBody, ConnectionTypes } from "@singlestore/elegance-sdk/types";
 
 import { eleganceClientKai, eleganceClientMySQL } from "@/services/eleganceClient";
 import { Button } from "@/components/Button";
@@ -14,32 +14,34 @@ import { State } from "@/components/State";
 import { Textarea } from "@/components/Textarea";
 
 export default function ChatCompletion() {
-  const chatCompletionKai = eleganceClientKai.hooks.useChatCompletion();
-  const chatCompletionMySQL = eleganceClientMySQL.hooks.useChatCompletion();
+  const chatCompletionKai = eleganceClientKai.hooks.useSearchChatCompletion();
+  const chatCompletionMySQL = eleganceClientMySQL.hooks.useSearchChatCompletion();
   const [connectionType, setConnectionType] = useState<ConnectionTypes>("mysql");
   const [db, setDb] = useState("");
   const [collection, setCollection] = useState("");
+  const [prompt, setPrompt] = useState("");
   const [textField, setTextField] = useState("text");
   const [embeddingField, setEmbeddingField] = useState("embedding");
   const [maxTokens, setMaxTokens] = useState<number | undefined>();
   const [temperature, setTemperature] = useState<number | undefined>();
   const [minSimilarity, setMinSimilarity] = useState<number>(0.7);
-  const [prompt, setPrompt] = useState("");
+  const [maxContextLength, setMaxContextLength] = useState<number>(500);
   const activeState = connectionType === "kai" ? chatCompletionKai : chatCompletionMySQL;
 
   const handleSubmit: JSX.IntrinsicElements["form"]["onSubmit"] = async event => {
     event.preventDefault();
     if (!prompt) return;
 
-    const payload: ChatCompletionBody = {
+    const payload: SearchChatCompletionBody = {
       db,
       collection,
+      prompt,
       textField,
       embeddingField,
       maxTokens,
       temperature,
-      prompt,
-      minSimilarity
+      minSimilarity,
+      maxContextLength
     };
 
     if (connectionType === "kai") {
@@ -54,7 +56,7 @@ export default function ChatCompletion() {
   if (!activeState.isLoading && activeState.value) responseText = activeState.value.content ?? "";
 
   return (
-    <PageContent heading="Feature: ChatCompletion">
+    <PageContent heading="Feature: SearchChatCompletion">
       <form className="mt-12 flex flex-col gap-4 " onSubmit={handleSubmit}>
         <ConnectionTypeSelect value={connectionType} onChange={setConnectionType} />
         <DatabaseField value={db} onChange={setDb} />
@@ -77,14 +79,24 @@ export default function ChatCompletion() {
           />
         </div>
 
-        <Input
-          label="Min similarity"
-          type="number"
-          min={0.0}
-          step={0.01}
-          value={minSimilarity}
-          onChange={value => setMinSimilarity(+value)}
-        />
+        <div className="flex w-full gap-4">
+          <Input
+            label="Min similarity"
+            type="number"
+            min={0.0}
+            step={0.01}
+            value={minSimilarity}
+            onChange={value => setMinSimilarity(+value)}
+          />
+
+          <Input
+            label="Max context length"
+            type="number"
+            min={0}
+            value={maxContextLength}
+            onChange={value => setMaxContextLength(+value)}
+          />
+        </div>
 
         <Textarea label="Prompt" value={prompt} onChange={setPrompt} />
 

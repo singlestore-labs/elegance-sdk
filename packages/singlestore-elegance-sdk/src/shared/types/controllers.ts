@@ -12,7 +12,7 @@ import type {
 
 import type { ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
 
-import type { EmbeddingInput, Embedding } from "./ai";
+import type { EmbeddingInput, Embedding, CreateEmbeddingArgs, CreateChatCompletionArgs } from "./ai";
 
 export type {
   MongoFilter,
@@ -107,7 +107,7 @@ export type FindManyBody<T extends FindManyResult = FindManyResult> = ByConnecti
   { columns?: string[]; where?: MySQLWhere; skip?: number; limit?: number }
 >;
 
-export type CreateEmbeddingBody = { input: EmbeddingInput };
+export type CreateEmbeddingBody = { input: CreateEmbeddingArgs[0] };
 
 export type VectorSearchResult = any[];
 export type VectorSearchBody = WithDb<{
@@ -118,18 +118,20 @@ export type VectorSearchBody = WithDb<{
   includeEmbedding?: boolean;
 }>;
 
-export type ChatCompletionResult = {
+export type CreateChatCompletionBody = CreateChatCompletionArgs[0];
+
+export type SearchChatCompletionResult = {
   content: string;
   context: string;
 };
-export type ChatCompletionBody = WithDb<
+export type SearchChatCompletionBody = WithDb<
   {
+    prompt: Exclude<CreateChatCompletionBody["prompt"], undefined>;
     textField?: string;
     embeddingField?: string;
-  } & Pick<
-    CreateChatCompletionBody,
-    "prompt" | "model" | "systemRole" | "messages" | "minSimilarity" | "maxTokens" | "maxContextLength" | "temperature"
-  >
+    minSimilarity?: number;
+    maxContextLength?: number;
+  } & Omit<CreateChatCompletionBody, "prompt">
 >;
 
 export type CreateFileEmbeddingsResult = { text: string; embedding: Embedding }[];
@@ -140,23 +142,5 @@ export type CreateFileEmbeddingsBody = {
   chunkSize?: number;
 };
 
-export type CreateAndInsertFileEmbeddingsResult = { text: string; embedding: Embedding }[];
-export type CreateAndInsertFileEmbeddingsBody = WithDb<{
-  dataURL: string;
-  textField?: string;
-  embeddingField?: string;
-  chunkSize?: number;
-}>;
-
-export type CreateChatCompletionBody = {
-  systemRole?: string;
-  prompt?: string;
-  promptEmbedding?: Embedding;
-  model?: string;
-  temperature?: number;
-  searchResults?: ({ similarity: number } & Record<string, any>)[];
-  messages?: ChatCompletionCreateParamsNonStreaming["messages"];
-  maxTokens?: number;
-  maxContextLength?: number;
-  minSimilarity?: number;
-};
+export type CreateAndInsertFileEmbeddingsResult = CreateFileEmbeddingsResult;
+export type CreateAndInsertFileEmbeddingsBody = WithDb<CreateFileEmbeddingsBody>;

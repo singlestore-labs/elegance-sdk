@@ -2,13 +2,12 @@ import type { Connection, VectorSearchResult, VectorSearchBody, AggregateQuery }
 import type { AI } from "../ai";
 import { handleError } from "../../shared/helpers";
 
-export const createVectorSearchController = <T extends Connection>(connection: T, ai: AI) => {
+export const vectorSearchController = <T extends Connection>(connection: T, ai: AI) => {
   return async <R extends VectorSearchResult = VectorSearchResult>(body: VectorSearchBody): Promise<R> => {
     try {
       let result: any = undefined;
 
-      const { db, collection, embeddingField, query, minSimilarity, limit, includeEmbedding = false } = body;
-
+      const { db, collection, embeddingField, query, minSimilarity = 0, limit, includeEmbedding = false } = body;
       const queryEmbedding = (await ai.createEmbedding(query))[0];
 
       if (connection.type === "kai") {

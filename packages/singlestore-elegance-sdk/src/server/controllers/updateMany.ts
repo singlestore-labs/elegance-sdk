@@ -1,7 +1,7 @@
 import type { Connection, UpdateManyResult, UpdateManyBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
 
-export const createUpdateManyController = <T extends Connection>(connection: T) => {
+export const updateManyController = <T extends Connection>(connection: T) => {
   return async <R extends UpdateManyResult = UpdateManyResult>(body: UpdateManyBody<R>[T["type"]]): Promise<R> => {
     try {
       let result: any = undefined;
