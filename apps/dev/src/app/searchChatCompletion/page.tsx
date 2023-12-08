@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { SearchChatCompletionBody, ConnectionTypes } from "@singlestore/elegance-sdk/types";
+import { ConnectionTypes, SearchChatCompletionBody } from "@singlestore/elegance-sdk/types";
 
 import { eleganceClientKai, eleganceClientMySQL } from "@/services/eleganceClient";
 import { Button } from "@/components/Button";
@@ -13,19 +13,21 @@ import { PageContent } from "@/components/PageContent";
 import { State } from "@/components/State";
 import { Textarea } from "@/components/Textarea";
 
-export default function ChatCompletion() {
+export default function SearchChatCompletion() {
   const chatCompletionKai = eleganceClientKai.hooks.useSearchChatCompletion();
   const chatCompletionMySQL = eleganceClientMySQL.hooks.useSearchChatCompletion();
   const [connectionType, setConnectionType] = useState<ConnectionTypes>("mysql");
   const [db, setDb] = useState("");
   const [collection, setCollection] = useState("");
-  const [prompt, setPrompt] = useState("");
-  const [textField, setTextField] = useState("text");
-  const [embeddingField, setEmbeddingField] = useState("embedding");
-  const [maxTokens, setMaxTokens] = useState<number | undefined>();
-  const [temperature, setTemperature] = useState<number | undefined>();
-  const [minSimilarity, setMinSimilarity] = useState<number>(0.7);
-  const [maxContextLength, setMaxContextLength] = useState<number>(500);
+  const [prompt, setPrompt] = useState<SearchChatCompletionBody["prompt"]>("");
+  const [textField, setTextField] = useState<SearchChatCompletionBody["textField"]>("text");
+  const [embeddingField, setEmbeddingField] = useState<SearchChatCompletionBody["embeddingField"]>("embedding");
+  const [minSimilarity, setMinSimilarity] = useState<SearchChatCompletionBody["minSimilarity"]>();
+  const [maxContextLength, setMaxContextLength] = useState<SearchChatCompletionBody["maxContextLength"]>(500);
+  const [model, setModel] = useState<SearchChatCompletionBody["model"]>("gpt-3.5-turbo");
+  const [systemRole, setSystemRole] = useState<SearchChatCompletionBody["systemRole"]>("");
+  const [maxTokens, setMaxTokens] = useState<SearchChatCompletionBody["maxTokens"]>();
+  const [temperature, setTemperature] = useState<SearchChatCompletionBody["temperature"]>();
   const activeState = connectionType === "kai" ? chatCompletionKai : chatCompletionMySQL;
 
   const handleSubmit: JSX.IntrinsicElements["form"]["onSubmit"] = async event => {
@@ -36,6 +38,8 @@ export default function ChatCompletion() {
       db,
       collection,
       prompt,
+      model,
+      systemRole,
       textField,
       embeddingField,
       maxTokens,
@@ -68,6 +72,7 @@ export default function ChatCompletion() {
         </div>
 
         <div className="flex w-full gap-4">
+          <Input label="Model" value={model} onChange={setModel} />
           <Input label="Max tokens" type="number" min={1} value={maxTokens} onChange={value => setMaxTokens(+value)} />
           <Input
             label="Temperature"
@@ -98,6 +103,7 @@ export default function ChatCompletion() {
           />
         </div>
 
+        <Input label="System role" value={systemRole} onChange={setSystemRole} />
         <Textarea label="Prompt" value={prompt} onChange={setPrompt} />
 
         <Button type="submit" className="ml-auto" disabled={activeState.isLoading}>

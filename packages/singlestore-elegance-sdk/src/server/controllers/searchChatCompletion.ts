@@ -20,7 +20,7 @@ export const searchChatCompletionController = <T extends Connection>(connection:
         embeddingField = "embedding",
         minSimilarity = 0,
         maxContextLength,
-        ...restBody
+        ...chatCompletionBody
       } = body;
 
       const promptEmbedding = (await ai.createEmbedding(prompt))[0];
@@ -55,7 +55,16 @@ export const searchChatCompletionController = <T extends Connection>(connection:
 
       if (!searchResults) throw new Error("No search results");
 
-      result = { content: "", context: "" };
+      const context = [...searchResults]
+        .map(i => i[textField])
+        .join("\n")
+        .slice(0, maxContextLength);
+
+      const _prompt = `The user wrote: ${prompt}. The most similar context is: ${context}`;
+
+      const chatCompletion = await ai.createChatCompletion({ ...chatCompletionBody, prompt: _prompt });
+
+      result = { content: chatCompletion, context };
 
       return result;
     } catch (error) {

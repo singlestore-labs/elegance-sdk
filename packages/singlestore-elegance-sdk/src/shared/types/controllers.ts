@@ -10,9 +10,7 @@ import type {
   AggregateOptions as MongoAggregateOptions
 } from "mongodb";
 
-import type { ChatCompletionCreateParamsNonStreaming } from "openai/resources/chat/completions";
-
-import type { EmbeddingInput, Embedding, CreateEmbeddingArgs, CreateChatCompletionArgs } from "./ai";
+import type { Embedding, CreateEmbeddingArgs, CreateChatCompletionArgs, CreateChatCompletionResult } from "./ai";
 
 export type {
   MongoFilter,
@@ -121,7 +119,7 @@ export type VectorSearchBody = WithDb<{
 export type CreateChatCompletionBody = CreateChatCompletionArgs[0];
 
 export type SearchChatCompletionResult = {
-  content: string;
+  content: CreateChatCompletionResult;
   context: string;
 };
 export type SearchChatCompletionBody = WithDb<

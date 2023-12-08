@@ -15,22 +15,13 @@ export default function ChatCompletion() {
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState<CreateChatCompletionBody["model"]>("gpt-3.5-turbo");
   const [systemRole, setSystemRole] = useState<CreateChatCompletionBody["systemRole"]>("");
-  // const [messages, setMessages] = useState<CreateChatCompletionBody["messages"]>([]);
   const [maxTokens, setMaxTokens] = useState<number | undefined>();
   const [temperature, setTemperature] = useState<number | undefined>();
 
   const handleSubmit: JSX.IntrinsicElements["form"]["onSubmit"] = async event => {
     event.preventDefault();
     if (!prompt) return;
-
-    await chatCompletionKai.execute({
-      prompt,
-      model,
-      systemRole,
-      // messages,
-      maxTokens,
-      temperature
-    });
+    await chatCompletionKai.execute({ prompt, model, systemRole, maxTokens, temperature });
   };
 
   let responseText = "Ask somesting";
@@ -40,8 +31,6 @@ export default function ChatCompletion() {
   return (
     <PageContent heading="Feature: CreateChatCompletion">
       <form className="mt-12 flex flex-col gap-4 " onSubmit={handleSubmit}>
-        <Input label="System role" value={systemRole} onChange={setSystemRole} />
-
         <div className="flex w-full gap-4">
           <Input label="Model" value={model} onChange={setModel} />
           <Input label="Max tokens" type="number" min={1} value={maxTokens} onChange={value => setMaxTokens(+value)} />
@@ -55,6 +44,7 @@ export default function ChatCompletion() {
           />
         </div>
 
+        <Input label="System role" value={systemRole} onChange={setSystemRole} />
         <Textarea label="Prompt" value={prompt} onChange={setPrompt} />
 
         <Button type="submit" className="ml-auto" disabled={chatCompletionKai.isLoading}>
