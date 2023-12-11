@@ -107,14 +107,16 @@ export type FindManyBody<T extends FindManyResult = FindManyResult> = ByConnecti
 
 export type CreateEmbeddingBody = { input: CreateEmbeddingArgs[0] };
 
-export type VectorSearchResult = any[];
-export type VectorSearchBody = WithDb<{
-  query: string;
-  embeddingField: string;
-  limit?: number;
-  minSimilarity?: number;
-  includeEmbedding?: boolean;
-}>;
+export type CreateFileEmbeddingsResult = { text: string; embedding: Embedding }[];
+export type CreateFileEmbeddingsBody = {
+  dataURL: string;
+  textField?: string;
+  embeddingField?: string;
+  chunkSize?: number;
+};
+
+export type CreateAndInsertFileEmbeddingsResult = CreateFileEmbeddingsResult;
+export type CreateAndInsertFileEmbeddingsBody = WithDb<CreateFileEmbeddingsBody>;
 
 export type CreateChatCompletionBody = CreateChatCompletionArgs[0];
 
@@ -132,13 +134,11 @@ export type SearchChatCompletionBody = WithDb<
   } & Omit<CreateChatCompletionBody, "prompt">
 >;
 
-export type CreateFileEmbeddingsResult = { text: string; embedding: Embedding }[];
-export type CreateFileEmbeddingsBody = {
-  dataURL: string;
-  textField?: string;
-  embeddingField?: string;
-  chunkSize?: number;
-};
-
-export type CreateAndInsertFileEmbeddingsResult = CreateFileEmbeddingsResult;
-export type CreateAndInsertFileEmbeddingsBody = WithDb<CreateFileEmbeddingsBody>;
+export type VectorSearchResult = any[];
+export type VectorSearchBody = WithDb<{
+  query: string;
+  embeddingField: string;
+  limit?: number;
+  minSimilarity?: number;
+  includeEmbedding?: boolean;
+}>;

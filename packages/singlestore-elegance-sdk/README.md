@@ -25,28 +25,55 @@ This guide will show you how to use the SDK in Express.js and React.js.
 2. Import the `createEleganceServerClient` function from `@singlestore/elegance-sdk/server`
 
 ```tsx
-// ./server/services/eleganceServerClient.ts
 import { createEleganceServerClient } from "@singlestore/elegance-sdk/server";
 
 export const eleganceServerClient = createEleganceServerClient("mysql", {
   connection: {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+    host: "<DB_HOST>"
+    user: "<DB_USER>"
+    password: "<DB_PASSWORD>"
+    database: "<DB_NAME>"
   },
   ai: {
     openai: {
-      apiKey: process.env.OPENAI_API_KEY
+      apiKey: "<OPENAI_API_KEY>"
     }
   }
 });
 ```
 
+In case if you don't want to use OpenAI, you can replace the existing AI SDK logic with customizers:
+
+```tsx
+
+...
+import {
+  EmbeddingInput,
+  CreateEmbeddingResult,
+  CreateChatCompletionParams,
+  CreateChatCompletionResult
+} from "@singlestore/elegance-sdk/types";
+
+...
+ai: {
+  customizers: {
+   createEmbedding: async (input: EmbeddingInput): Promise<CreateEmbeddingResult> => {
+     const embedding = await customFn(input);
+     return embedding;
+  },
+
+   createChatCompletion: async (params: CreateChatCompletionParams): Promise<CreateChatCompletionResult> => {
+    const chatCompletion = await customFn(params);
+    return chatCompletion;
+  }
+ }
+}
+...
+```
+
 3. Create a route handler for `elegance/:route` (using Express.js as an example).
 
 ```tsx
-// ./server/routes/elegance.ts
 import express from "express";
 import type { Routes } from "@singlestore/elegance-sdk/server";
 import { eleganceServerClient } from "@/services/eleganceServerClient";
@@ -67,7 +94,6 @@ eleganceRouter.post("/elegance/:route", async (req, res) => {
 4. Import the eleganceRouter into the `./server/index.ts`
 
 ```tsx
-// ./server/index.ts
 import express from "express";
 import { eleganceRouter } from "./routes/elegance";
 
@@ -80,12 +106,11 @@ app.listen(4000, () => {
 });
 ```
 
-5. Run your server
+5. Run the server
 6. Create a `eleganceClient.ts` file
 7. Import the `createEleganceClient` function from `@singlestore/elegance-sdk`
 
 ```tsx
-// ./client/services/eleganceClient.ts
 import { createEleganceClient } from "@singlestore/elegance-sdk";
 
 export const eleganceClient = createEleganceClient("mysql", {
@@ -96,7 +121,6 @@ export const eleganceClient = createEleganceClient("mysql", {
 7. Import the `eleganceClient` to your component
 
 ```tsx
-// ./client/components/ExampleComponent.tsx
 import { useEffect } from "react";
 import { eleganceClient } from "@/services/eleganceClient";
 
@@ -145,13 +169,13 @@ Creates an EleganceServerClient instance for a server.
 
 - `connectionType: "kai" | "mysql"`
 - ```tsx
-  config: {
-    connection: KaiConnectionConfig | MySQLConnectionConfig;
-    ai?: {
-      openai?: OpenAIConfig;
-      customizers?: {
-        createEmbedding?: (input: EmbeddingInput) => Promise<Embedding[]>;
-        createChatCompletion?: (body: CreateChatCompletionBody) => Promise<string | null>;
+    config: {
+      connection: KaiConnectionConfig | MySQLConnectionConfig;
+      ai?: {
+        openai?: OpenAIConfig;
+        customizers?: {
+          createEmbedding?: (input: EmbeddingInput) => Promise<CreateEmbeddingResult>;
+          createChatCompletion?: (params: CreateChatCompletionParams) => Promise<CreateChatCompletionResult>;
       } // You can use your own functions to create an embedding or a chat completion.
     };
   }
@@ -182,19 +206,27 @@ Inserts one record.
 
 **Parameters:**
 
+Kai
+
 ```tsx
 body: {
-    db?: string; // Database name
-    collection: string; // Collection name
-    generateId?: boolean; // Generates the `id` string field
-    value: MongoOptionalUnlessRequiredId<T>; // Value to insert
+    db?: string;
+    collection: string;
+    generateId?: boolean;
+    value: MongoOptionalUnlessRequiredId<T>;
     options?: MongoInsertOneOptions;
-  } | {
+}
+```
+
+MySQL
+
+```tsx
+body: {
     db?: string;
     collection: string;
     generateId?: boolean;
     value: T;
-  }
+}
 ```
 
 **Returns:** `T`
@@ -205,19 +237,27 @@ Inserts many records.
 
 **Parameters:**
 
+Kai
+
 ```tsx
 body: {
-    db?: string; // Database name
-    collection: string; // Collection name
-    values: Array<MongoOptionalUnlessRequiredId<T[number]>>; // Values to insert
-    generateId?: boolean; // Generates the `id` string field
+    db?: string;
+    collection: string;
+    values: Array<MongoOptionalUnlessRequiredId<T[number]>>;
+    generateId?: boolean;
     options?: MongoBulkWriteOptions;
-  } | {
+}
+```
+
+MySQL
+
+```tsx
+body: {
     db?: string;
     collection: string;
     generateId?: boolean;
     values: Array<T>;
-  }
+}
 ```
 
 **Returns:** `Array<T>`
@@ -228,21 +268,29 @@ Updates many records.
 
 **Parameters:**
 
+Kai
+
 ```tsx
 body: {
-    db?: string; // Database name
-    collection: string; // Collection name
-    filter: MongoFilter<T[number]>; // Filter to find records to update
-    update: MongoUpdateFilter<T[number]>;
-    options?: MongoUpdateOptions;
-    updatedFilter?: MongoFilter<T[number]>; // Filter to find updated records
-  } | {
     db?: string;
     collection: string;
-    where: MySQLWhere; // MySQL WHERE string value to find records to update
-    set: MySQLSet; // MySQL SET string value
-    updatedWhere: MySQLWhere; // MySQL WHERE string value to find updated records
-  }
+    filter: MongoFilter<T[number]>;
+    update: MongoUpdateFilter<T[number]>;
+    options?: MongoUpdateOptions;
+    updatedFilter?: MongoFilter<T[number]>;
+}
+```
+
+MySQL
+
+```tsx
+body: {
+    db?: string;
+    collection: string;
+    where: MySQLWhere;
+    set: MySQLSet;
+    updatedWhere: MySQLWhere;
+}
 ```
 
 **Returns:** `Array<T>`
@@ -253,17 +301,25 @@ Deletes many records.
 
 **Parameters:**
 
+Kai
+
 ```tsx
 body: {
-    db?: string; // Database name
-    collection: string; // Collection name
-    filter: MongoFilter<T>; // Filter to find records to delete
-    options?: MongoDeleteOptions;
-  } | {
     db?: string;
     collection: string;
-    where: MySQLWhere; // MySQL WHERE string value to find records to delete
-  }
+    filter: MongoFilter<T>;
+    options?: MongoDeleteOptions;
+}
+```
+
+MySQL
+
+```tsx
+body: {
+    db?: string;
+    collection: string;
+    where: MySQLWhere;
+}
 ```
 
 **Returns:** `{ message: string }`
@@ -274,18 +330,26 @@ Gets one record.
 
 **Parameters:**
 
+Kai
+
 ```tsx
 body: {
-    db?: string; // Database name
-    collection: string; // Collection name
-    filter?: MongoFilter<T>; // Filter to find a record
-    options?: MongoFindOptions;
-  } | {
     db?: string;
     collection: string;
-    columns?: string[]; // Columns to get by default *
-    where?: MySQLWhere; // MySQL WHERE string value to find a record
-  }
+    filter?: MongoFilter<T>;
+    options?: MongoFindOptions;
+}
+```
+
+MySQL
+
+```tsx
+body: {
+    db?: string;
+    collection: string;
+    columns?: string[];
+    where?: MySQLWhere;
+}
 ```
 
 **Returns:** `T`
@@ -295,21 +359,28 @@ body: {
 Gets many records.
 
 **Parameters:**
+Kai
 
 ```tsx
 body: {
-    db?: string; // Database name
-    collection: string; // Collection name
-    filter?: MongoFilter<T[number]>; // Filter to find records
-    options?: MongoFindOptions;
-  } | {
     db?: string;
     collection: string;
-    columns?: string[]; // Columns to get by default *
-    where?: MySQLWhere; // MySQL WHERE string value to find records
+    filter?: MongoFilter<T[number]>;
+    options?: MongoFindOptions;
+}
+```
+
+MySQL
+
+```tsx
+body: {
+    db?: string;
+    collection: string;
+    columns?: string[];
+    where?: MySQLWhere;
     skip?: number;
     limit?: number;
-  }
+}
 ```
 
 **Returns:** `Array<object>`
@@ -320,15 +391,23 @@ Executes MySQL or aggregate query.
 
 **Parameters:**
 
+Kai
+
 ```tsx
 body: {
-    db?: string; // Database name
-    collection: string; // Collection name
-    query: object[]; // Aggregate query
+    db?: string;
+    collection: string;
+    query: object[];
     options?: MongoAggregateOptions;
-  } | {
-    query: string; // MySQL query
-  }
+}
+```
+
+MySQL
+
+```tsx
+body: {
+  query: string;
+}
 ```
 
 **Returns:** `Array<T>`
@@ -347,25 +426,64 @@ body: {
 
 **Returns:** `Embedding`
 
-#### eleganceServerClient.controllers.vectorSearch
+#### eleganceServerClient.controllers.createFileEmbeddings
 
-Performs vector search in the collection based on the query.
+Accepts a CSV or PDF file, splits it into chunks and creates embeddings.
 
 **Parameters:**
 
 ```tsx
 body: {
-    db?: string; // Database name
-    collection: string; // Collection name
-    embeddingField: string; // Field name with the embedding by which to perform the search
-    query: string; // Search query
-    minSimilarity?: number; // Minimum similarity number to filter search results, used to create a chat completion.
-    limit?: number; // Number of records to get
-    includeEmbedding?: boolean;
-  }
+  dataURL: string;
+  textField?: string;
+  embeddingField?: string;
+  chunkSize?: number;
+}
 ```
 
-**Returns:** `Array<object>`
+**Returns:** `Array<{ text: string; embedding: Embedding; }>`
+
+#### eleganceServerClient.controllers.createAndInsertFileEmbeddings
+
+Accepts a CSV or PDF file, splits it into chunks, creates embeddings, and inserts them into a database.
+
+**Parameters:**
+
+```tsx
+body: {
+    db?: string;
+    collection: string;
+    dataURL: string;
+    textField?: string;
+    embeddingField?: string;
+    chunkSize?: number;
+}
+```
+
+**Returns:** `Array<{ text: string; embedding: Embedding; }>`
+
+#### eleganceServerClient.controllers.createChatCompletion
+
+Accepts a prompt and creates chat completion.
+
+**Parameters:**
+
+```tsx
+body: {
+  model?: ChatCompletionCreateParamsNonStreaming["model"];
+  prompt?: string;
+  systemRole?: string;
+  messages?: ChatCompletionMessage[];
+  temperature?: number;
+  maxTokens?: number;
+}
+```
+
+**Returns:**
+
+```tsx
+string | null;
+```
 
 #### eleganceServerClient.controllers.searchChatCompletion
 
@@ -375,19 +493,19 @@ Accepts a prompt, performs vector search, and creates chat completion for the fo
 
 ```tsx
 body: {
-    db?: string; // Database name
-    collection: string; // Collection name
-    prompt: string; // Prompt text
-    model?: string;
-    textField?: string; // Field name by which to create a chat completion
-    embeddingField?: string; // Field name with the embedding by which to perform the search
-    minSimilarity?: number; // Minimum similarity number to filter search results, used to create a chat completion.
-    systemRole?: string; // Initial system role
-    messages?: CreateChatCompletionBody["messages"]; // Additional messages after the prompt message
-    maxTokens?: CreateChatCompletionBody["max_tokens"];
-    temperature?: CreateChatCompletionBody["temperature"];
+    db?: string;
+    collection: string;
+    model?: ChatCompletionCreateParamsNonStreaming["model"];
+    prompt: string;
+    systemRole?: string;
+    messages?: ChatCompletionMessage[];
+    temperature?: number;
+    maxTokens?: number;
+    textField?: string;
+    embeddingField?: string;
+    minSimilarity?: number;
     maxContextLength?: number;
-  }
+}
 ```
 
 **Returns:**
@@ -399,47 +517,25 @@ body: {
 }
 ```
 
-#### eleganceServerClient.controllers.createFileEmbeddings
+#### eleganceServerClient.controllers.vectorSearch
 
-Accepts a CSV or PDF file as a DataURL, splits it into chunks and creates embeddings.
-
-**Parameters:**
-
-```tsx
-body: {
-    file?: // CSV or PDF file
-    dataURL?: string; // CSV or PDF file DataURL
-    textField?: string; // Field name in which to save a chunk text
-    embeddingField?: string; // Field name in which to save an embedding
-    chunkSize?: number;
-  }
-```
-
-**Returns:** `Array<{ text: string; embedding: Embedding; }>`
-
-#### eleganceServerClient.controllers.createAndInsertFileEmbeddings
-
-Accepts a CSV or PDF file as a DataURL, splits it into chunks, creates embeddings, and inserts them into a database.
+Performs vector search in the collection based on the query.
 
 **Parameters:**
 
 ```tsx
 body: {
-    db?: string; // Database name
-    collection: string; // Collection name
-    file?: // CSV or PDF file
-    dataURL?: string; // CSV or PDF file DataURL
-    textField?: string; // Field name in which to save a chunk text
-    embeddingField?: string; // Field name in which to save an embedding
-    chunkSize?: number;
-  }
+    db?: string;
+    collection: string;
+    query: string;
+    embeddingField: string;
+    limit?: number;
+    minSimilarity?: number;
+    includeEmbedding?: boolean;
+}
 ```
 
-**Returns:** `Array<{ text: string; embedding: Embedding; }>`
-
-#### eleganceServerClient.ai.openai
-
-Default OpenAI client
+**Returns:** `Array<any>`
 
 #### eleganceServerClient.ai.createEmbedding
 
@@ -447,13 +543,13 @@ Creates embedding
 
 **Parameters:**
 
-- `input: string | Array<string> | object | Array<object>` - input value
+- `input: string | Array<string> | object | Array<object>`
 
 **Returns:** `Embedding`
 
 #### eleganceServerClient.ai.embeddingToBuffer
 
-Converts an embedding into a buffer that is then inserted into the database.
+Converts an embedding into a buffer that is then inserted into the database (for Kai).
 
 **Parameters:**
 
@@ -469,10 +565,10 @@ Converts text into embeddings by splitting the text into chunks.
 
 - `text: string`
 - ```tsx
-  options?: {
-    chunkSize?: number;
-    textField?: string; // Field name in which to save a chunk text
-    embeddingField?: string; // Field name in which to save an embedding
+    options?: {
+      chunkSize?: number;
+      textField?: string;
+      embeddingField?: string;
   }
   ```
 
@@ -484,10 +580,10 @@ Converts a DataURL (csv, pdf) into an embedding by splitting the text into chunk
 
 - `dataURL: string`
 - ```tsx
-  options?: {
-    chunkSize?: number;
-    textField?: string; // Field name in which to save a chunk text
-    embeddingField?: string; // Field name in which to save an embedding
+    options?: {
+      chunkSize?: number;
+      textField?: string;
+      embeddingField?: string;
   }
   ```
 
@@ -495,21 +591,18 @@ Converts a DataURL (csv, pdf) into an embedding by splitting the text into chunk
 
 #### eleganceServerClient.ai.createChatCompletion
 
-Generates a chat completion.
+Creates a chat completion.
 
 **Parameters:**
 
 - ```tsx
-  body: {
-    prompt?: string;
-    promptEmbedding?: Embedding;
-    model?: string;
-    temperature?: number;
-    searchResults?: ({ similarity: number } & Record<string, any>)[];
-    messages?: Array<{role: string; content: string}>;
-    maxTokens?: number;
-    maxContextLength?: number;
-    minSimilarity?: number;
+    params: {
+      model?: ChatCompletionCreateParamsNonStreaming["model"];
+      prompt?: string;
+      systemRole?: string;
+      messages?: ChatCompletionMessage[];
+      temperature?: number;
+      maxTokens?: number;
   }
   ```
 
@@ -524,7 +617,7 @@ Creates an EleganceClient instance for a client.
 - `connectionType: "kai" | "mysql"`
 - ```tsx
   config: {
-    baseURL: string; // Server URL with the '/elegance/:route' route handler.
+    baseURL: string;
   }
   ```
 
@@ -536,7 +629,7 @@ Client that includes requests and hooks. It is used to make requests to the serv
 
 #### eleganceClient.requests
 
-Clean functions to make requests to the server. They can be used anywhere within a project and are handled like typical async functions. The parameters for each request correspond to the controller parameters by name. To familiarize with the parameters, refer to the `eleganceServerClient.controllers.<requestName>.execute` section.
+Clean functions to make requests to the server. They can be used anywhere within a project and are handled like typical async functions. The parameters for each request correspond to the controller parameters by name. To familiarize with the parameters, refer to the `eleganceServerClient.controllers.<requestName>` section.
 
 #### eleganceClient.hooks
 
@@ -550,7 +643,7 @@ Ready-to-use React.js hooks with state handlers that use requests. Each hook has
   setValue: react.Dispatch<react.SetStateAction<Awaited<R> | undefined>>;
   setError: react.Dispatch<react.SetStateAction<DefaultError | undefined>>;
   setIsLoading: react.Dispatch<react.SetStateAction<boolean>>;
-  execute: (body: object) => Promise<Awaited<R> | undefined>; // Function that executes a request from the eleganceClient.requests by name
+  execute: (body: object) => Promise<Awaited<R> | undefined>;
 };
 ```
 
