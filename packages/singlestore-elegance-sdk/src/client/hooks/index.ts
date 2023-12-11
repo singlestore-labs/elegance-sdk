@@ -5,13 +5,14 @@ import type {
   QueryResult,
   CreateAndInsertFileEmbeddingsResult,
   VectorSearchResult,
-  ChatCompletionResult,
+  SearchChatCompletionResult,
   InsertOneResult,
   InsertManyResult,
   UpdateManyResult,
   DeleteManyResult,
   CreateEmbeddingResult,
-  CreateFileEmbeddingsResult
+  CreateFileEmbeddingsResult,
+  CreateChatCompletionResult
 } from "../../shared/types";
 import { createRequests } from "../requests";
 import { UseRequestOptions, useRequest } from "./useRequest";
@@ -64,12 +65,20 @@ export function createHooks<T extends ConnectionTypes>(requests: ReturnType<type
       return useRequest(requests.createAndInsertFileEmbeddings<R>, options);
     },
 
-    useVectorSearch: <R extends VectorSearchResult = VectorSearchResult>(options?: UseRequestOptions<R>) => {
-      return useRequest(requests.vectorSearch<R>, options);
+    useCreateChatCompletion: <R extends CreateChatCompletionResult = CreateChatCompletionResult>(
+      options?: UseRequestOptions<R>
+    ) => {
+      return useRequest(requests.createChatCompletion<R>, options);
     },
 
-    useChatCompletion: <R extends ChatCompletionResult = ChatCompletionResult>(options?: UseRequestOptions<R>) => {
-      return useRequest(requests.chatCompletion<R>, options);
+    useSearchChatCompletion: <R extends SearchChatCompletionResult = SearchChatCompletionResult>(
+      options?: UseRequestOptions<R>
+    ) => {
+      return useRequest(requests.searchChatCompletion<R>, options);
+    },
+
+    useVectorSearch: <R extends VectorSearchResult = VectorSearchResult>(options?: UseRequestOptions<R>) => {
+      return useRequest(requests.vectorSearch<R>, options);
     }
   };
 }

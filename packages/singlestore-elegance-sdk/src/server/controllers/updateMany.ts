@@ -1,37 +1,37 @@
 import type { Connection, UpdateManyResult, UpdateManyBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
-import { createController, getTablePath } from "../utils";
 
-export const createUpdateManyController = <T extends Connection>(connection: T) => {
-  return createController({
-    name: "updateMany",
-    method: "POST",
-    execute: async <R extends UpdateManyResult = UpdateManyResult>(body: UpdateManyBody<R>[T["type"]]): Promise<R> => {
-      try {
-        let result: any = undefined;
+export const updateManyController = <T extends Connection>(connection: T) => {
+  return async <R extends UpdateManyResult = UpdateManyResult>(body: UpdateManyBody<R>[T["type"]]): Promise<R> => {
+    try {
+      let result: any = undefined;
 
-        if (connection.type === "kai") {
-          const { collection, filter, update, options, updatedFilter } = body as UpdateManyBody["kai"];
-          await connection.db.collection(collection).updateMany(filter, update, options);
-          const updated = connection.db.collection(collection).find(updatedFilter ?? filter);
-          result = await updated.toArray();
-        } else {
-          const { db, table, set, where, updatedWhere } = body as UpdateManyBody["mysql"];
-          const tablePath = getTablePath(connection, table, db);
+      const { db, collection } = body;
 
-          await connection.promise().execute(`UPDATE ${tablePath} SET ${set} WHERE ${where}`);
+      if (connection.type === "kai") {
+        const { filter, update, options, updatedFilter } = body as UpdateManyBody["kai"];
+        await connection.db(db).collection(collection).updateMany(filter, update, options);
+        const updated = connection
+          .db(db)
+          .collection(collection)
+          .find(updatedFilter ?? filter);
+        result = await updated.toArray();
+      } else {
+        const { set, where, updatedWhere } = body as UpdateManyBody["mysql"];
+        const tablePath = connection.tablePath(collection, db);
 
-          if (updatedWhere) {
-            const updated = await connection.promise().execute(`SELECT * FROM ${tablePath} WHERE ${updatedWhere}`);
+        await connection.execute(`UPDATE ${tablePath} SET ${set} WHERE ${where}`);
 
-            result = updated?.[0];
-          }
+        if (updatedWhere) {
+          const updated = await connection.execute(`SELECT * FROM ${tablePath} WHERE ${updatedWhere}`);
+
+          result = updated?.[0];
         }
-
-        return result;
-      } catch (error) {
-        throw handleError(error);
       }
+
+      return result;
+    } catch (error) {
+      throw handleError(error);
     }
-  });
+  };
 };

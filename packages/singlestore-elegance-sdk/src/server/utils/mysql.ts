@@ -16,23 +16,18 @@ export function createMySQLConnection(config: MySQLConnectionConfig): MySQLConne
     throw new Error("Password is undefined");
   }
 
-  return Object.assign(createPool(_config), {
-    type: "mysql" as MySQLConnection["type"],
-    dbName: database as MySQLConnection["dbName"]
-  });
-}
+  const tablePath: MySQLConnection["tablePath"] = (table, dbName) => {
+    const _dbName = dbName || database || "";
+    return typeof _dbName === "string" && _dbName.length ? `${_dbName}.${table}` : table;
+  };
 
-export function processDbName(connection: MySQLConnection, dbName?: string): string {
-  return dbName || connection.dbName || "";
-}
+  const pool = createPool(_config).promise();
 
-export function concatDbAndTableNames(table: string, dbName?: string) {
-  return typeof dbName === "string" && dbName.length ? `${dbName}.${table}` : table;
-}
-
-export function getTablePath(connection: MySQLConnection, table: string, dbName?: string) {
-  const _dbName = processDbName(connection, dbName);
-  return concatDbAndTableNames(table, _dbName);
+  return Object.assign(pool, {
+    type: "mysql",
+    dbName: database,
+    tablePath
+  } satisfies Pick<MySQLConnection, "type" | "dbName" | "tablePath">);
 }
 
 export function toInsertValuesQuery(tablePath: string, value: object | object[]) {

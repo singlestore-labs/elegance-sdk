@@ -1,100 +1,78 @@
 "use client";
 
 import { useState } from "react";
-import { CollectionOrTableField } from "@/components/CollectionOrTableField";
-import { ConnectionTypeSelect } from "@/components/ConnectionTypeSelect";
+import { ConnectionTypes, VectorSearchBody } from "@singlestore/elegance-sdk/types";
+
 import { eleganceClientKai, eleganceClientMySQL } from "@/services/eleganceClient";
-import { PageContent } from "@/components/PageContent";
 import { Button } from "@/components/Button";
+import { CollectionField } from "@/components/CollectionField";
+import { ConnectionTypeSelect } from "@/components/ConnectionTypeSelect";
+import { DatabaseField } from "@/components/DatabaseField";
+import { Input } from "@/components/Input";
+import { PageContent } from "@/components/PageContent";
+import { State } from "@/components/State";
+import { Checkbox } from "@/components/Checkbox";
 
 export default function VectorSearch() {
   const vectorSearchKai = eleganceClientKai.hooks.useVectorSearch();
   const vectorSearchMySQL = eleganceClientMySQL.hooks.useVectorSearch();
-  const [connectionTypeValue, setConnectionTypeValue] = useState("kai");
-  const [collectionValue, setCollectionValue] = useState("stars_data_embedding_csv");
-  const [embeddingFieldValue, setEmbeddingFieldValue] = useState("embedding");
-  const [limitValue, setLimitValue] = useState(5);
-  const [queryValue, setQueryValue] = useState("");
-  const activeState = connectionTypeValue === "kai" ? vectorSearchKai : vectorSearchMySQL;
+  const [connectionType, setConnectionType] = useState<ConnectionTypes>("mysql");
+  const [db, setDb] = useState("");
+  const [collection, setCollection] = useState("");
+  const [embeddingField, setEmbeddingField] = useState("embedding");
+  const [minSimilarity, setMinSimilarity] = useState(0.7);
+  const [limit, setLimit] = useState(5);
+  const [query, setQuery] = useState("");
+  const [includeEmbedding, setIncludeEmbedding] = useState(false);
 
   const handleSubmit: JSX.IntrinsicElements["form"]["onSubmit"] = async event => {
     event.preventDefault();
-    if (!queryValue) return;
+    if (!query) return;
 
-    if (connectionTypeValue === "kai") {
-      await vectorSearchKai.execute({
-        collection: collectionValue,
-        embeddingField: embeddingFieldValue,
-        limit: limitValue,
-        query: queryValue
-      });
+    const body: VectorSearchBody = {
+      db,
+      collection,
+      embeddingField,
+      limit,
+      query,
+      minSimilarity,
+      includeEmbedding
+    };
+
+    if (connectionType === "kai") {
+      await vectorSearchKai.execute(body);
     } else {
-      await vectorSearchMySQL.execute({
-        table: collectionValue,
-        embeddingField: embeddingFieldValue,
-        limit: limitValue,
-        query: queryValue
-      });
+      await vectorSearchMySQL.execute(body);
     }
   };
 
   return (
     <PageContent heading="Feature: VectorSearch">
       <form className="mt-12 flex flex-col gap-4 " onSubmit={handleSubmit}>
-        <ConnectionTypeSelect value={connectionTypeValue} onChange={setConnectionTypeValue} />
+        <ConnectionTypeSelect value={connectionType} onChange={setConnectionType} />
+        <DatabaseField value={db} onChange={setDb} />
+        <CollectionField value={collection} onChange={setCollection} />
+        <Input label="Embedding field" value={embeddingField} onChange={setEmbeddingField} />
+        <Input label="Limit" type="number" min={0} value={limit} onChange={value => setLimit(+value)} />
+        <Checkbox label="Include embedding" value={includeEmbedding} onChange={setIncludeEmbedding} />
 
-        <CollectionOrTableField
-          connectionType={connectionTypeValue}
-          value={collectionValue}
-          onChange={setCollectionValue}
+        <Input
+          label="Min similarity"
+          type="number"
+          min={0.0}
+          step={0.01}
+          value={minSimilarity}
+          onChange={value => setMinSimilarity(+value)}
         />
 
-        <label className="w-full ">
-          <span className="mb-2 inline-block">Embedding field</span>
-          <input
-            name="embeddingFieldValue"
-            placeholder="Enter embedding field name"
-            value={embeddingFieldValue}
-            onChange={event => setEmbeddingFieldValue(event.target.value)}
-            className="w-full rounded border px-4 py-2 "
-          />
-        </label>
+        <Input label="Query" value={query} onChange={setQuery} />
 
-        <label className="w-full ">
-          <span className="mb-2 inline-block">Limit</span>
-          <input
-            type="number"
-            min={0}
-            name="limitValue"
-            placeholder="Enter limit"
-            value={limitValue}
-            onChange={event => setLimitValue(+event.target.value)}
-            className="w-full rounded border px-4 py-2 "
-          />
-        </label>
-
-        <label className="w-full ">
-          <span className="mb-2 inline-block">Query</span>
-          <input
-            name="queryValue"
-            placeholder="Enter search query"
-            value={queryValue}
-            onChange={event => setQueryValue(event.target.value)}
-            className="w-full rounded border px-4 py-2 "
-          />
-        </label>
-
-        <Button type="submit" className="ml-auto" disabled={activeState.isLoading}>
+        <Button type="submit" className="ml-auto">
           Submit
         </Button>
       </form>
 
-      <div className="mt-8">
-        <h2 className="text-xl">Feature state</h2>
-        <pre className="mt-8 max-h-[512px] w-full overflow-x-auto overflow-y-auto whitespace-pre-wrap rounded border   p-4">
-          {JSON.stringify(activeState, null, 2)}
-        </pre>
-      </div>
+      <State connectionType={connectionType} mysqlState={vectorSearchMySQL} kaiState={vectorSearchKai} />
     </PageContent>
   );
 }

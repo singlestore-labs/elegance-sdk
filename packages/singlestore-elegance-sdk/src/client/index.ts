@@ -1,10 +1,11 @@
 import type { ConnectionTypes } from "../shared/types";
-import type { ClientConfig } from "./types";
-import { createFetcher } from "./utils";
+import { createFetcher } from "./utils/fetcher";
 import { createHooks } from "./hooks";
 import { createRequests } from "./requests";
 
-export * from "./types";
+export type ClientConfig = { baseURL: string; defaultRequestOptions?: Partial<RequestInit> };
+
+export type EleganceClient<T extends ConnectionTypes> = ReturnType<typeof createEleganceClient<T>>;
 
 export function createEleganceClient<T extends ConnectionTypes>(connectionType: T, config: ClientConfig) {
   const fetcher = createFetcher(config);

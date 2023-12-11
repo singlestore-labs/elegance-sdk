@@ -1,40 +1,37 @@
 import type { Connection, FindOneResult, FindOneBody } from "../../shared/types";
 import { handleError } from "../../shared/helpers";
-import { createController, getTablePath } from "../utils";
 
-export const createFindOneController = <T extends Connection>(connection: T) => {
-  return createController({
-    name: "findOne",
-    method: "POST",
-    execute: async <R extends FindOneResult = FindOneResult>(body: FindOneBody<R>[T["type"]]): Promise<R> => {
-      try {
-        let result: any = undefined;
+export const findOneController = <T extends Connection>(connection: T) => {
+  return async <R extends FindOneResult = FindOneResult>(body: FindOneBody<R>[T["type"]]): Promise<R> => {
+    try {
+      let result: any = undefined;
 
-        if (connection.type === "kai") {
-          const { collection, filter = {}, options } = body as FindOneBody["kai"];
-          result = await connection.db.collection(collection).findOne(filter, options);
+      const { db, collection } = body;
+
+      if (connection.type === "kai") {
+        const { filter = {}, options } = body as FindOneBody["kai"];
+        result = await connection.db(db).collection(collection).findOne(filter, options);
+      } else {
+        const { columns, where } = body as FindOneBody["mysql"];
+        const tablePath = connection.tablePath(collection, db);
+        let query = `SELECT`;
+
+        if (columns) {
+          query += ` ${columns.join(", ")}`;
         } else {
-          const { db, table, columns, where } = body as FindOneBody["mysql"];
-          const tablePath = getTablePath(connection, table, db);
-          let query = `SELECT`;
-
-          if (columns) {
-            query += ` ${columns.join(", ")}`;
-          } else {
-            query += " *";
-          }
-
-          query += ` FROM ${tablePath}`;
-
-          if (where) query += ` WHERE ${where}`;
-          query += ` LIMIT 1`;
-          result = ((await connection.promise().execute(query)) as any)?.[0]?.[0];
+          query += " *";
         }
 
-        return result;
-      } catch (error) {
-        throw handleError(error);
+        query += ` FROM ${tablePath}`;
+
+        if (where) query += ` WHERE ${where}`;
+        query += ` LIMIT 1`;
+        result = ((await connection.execute(query)) as any)?.[0]?.[0];
       }
+
+      return result;
+    } catch (error) {
+      throw handleError(error);
     }
-  });
+  };
 };
