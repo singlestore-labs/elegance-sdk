@@ -13,7 +13,7 @@ export const findManyController = <T extends Connection>(connection: T) => {
         let _result = connection.db(db).collection(collection).find(filter, options);
         result = await _result.toArray();
       } else {
-        const { columns, where, skip, limit } = body as FindManyBody["mysql"];
+        const { columns, where, skip, limit, extra } = body as FindManyBody["mysql"];
         const tablePath = connection.tablePath(collection, db);
         let query = `SELECT`;
 
@@ -28,6 +28,7 @@ export const findManyController = <T extends Connection>(connection: T) => {
         if (where) query += ` WHERE ${where}`;
         if (limit) query += ` LIMIT ${limit}`;
         if (skip) query += ` OFFSET ${skip}`;
+        if (extra) query += ` ${extra}`;
         result = (await connection.execute(query))[0];
       }
 

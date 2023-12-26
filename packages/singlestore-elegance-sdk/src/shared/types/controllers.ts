@@ -95,14 +95,14 @@ export type FindOneResult<T = any> = T;
 export type FindOneBody<T extends FindOneResult = FindOneResult> = ByConnection<
   {},
   { filter?: MongoFilter<T>; options?: MongoFindOptions },
-  { columns?: string[]; where?: MySQLWhere }
+  { columns?: string[]; where?: MySQLWhere; extra?: string }
 >;
 
 export type FindManyResult<T extends any[] = any[]> = T;
 export type FindManyBody<T extends FindManyResult = FindManyResult> = ByConnection<
   {},
   { filter?: MongoFilter<T[number]>; options?: MongoFindOptions },
-  { columns?: string[]; where?: MySQLWhere; skip?: number; limit?: number }
+  { columns?: string[]; where?: MySQLWhere; skip?: number; limit?: number; extra?: string }
 >;
 
 export type CreateEmbeddingBody = { input: CreateEmbeddingArgs[0] };
