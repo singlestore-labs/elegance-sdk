@@ -349,6 +349,7 @@ body: {
     collection: string;
     columns?: string[];
     where?: MySQLWhere;
+    extra?: string;
 }
 ```
 
@@ -380,6 +381,7 @@ body: {
     where?: MySQLWhere;
     skip?: number;
     limit?: number;
+    extra?: string;
 }
 ```
 

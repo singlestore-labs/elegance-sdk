@@ -12,7 +12,7 @@ export const findOneController = <T extends Connection>(connection: T) => {
         const { filter = {}, options } = body as FindOneBody["kai"];
         result = await connection.db(db).collection(collection).findOne(filter, options);
       } else {
-        const { columns, where } = body as FindOneBody["mysql"];
+        const { columns, where, extra } = body as FindOneBody["mysql"];
         const tablePath = connection.tablePath(collection, db);
         let query = `SELECT`;
 
@@ -26,6 +26,7 @@ export const findOneController = <T extends Connection>(connection: T) => {
 
         if (where) query += ` WHERE ${where}`;
         query += ` LIMIT 1`;
+        if (extra) query += ` ${extra}`;
         result = ((await connection.execute(query)) as any)?.[0]?.[0];
       }
 
