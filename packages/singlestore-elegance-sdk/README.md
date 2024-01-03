@@ -530,6 +530,7 @@ body: {
     db?: string;
     collection: string;
     query: string;
+    queryEmbedding?: Embedding;
     embeddingField: string;
     limit?: number;
     minSimilarity?: number;
