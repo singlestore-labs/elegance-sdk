@@ -7,11 +7,20 @@ export const vectorSearchController = <T extends Connection>(connection: T, ai: 
     try {
       let result: any = undefined;
 
-      const { db, collection, embeddingField, query, minSimilarity = 0, limit, includeEmbedding = false } = body;
-      const queryEmbedding = (await ai.createEmbedding(query))[0];
+      const {
+        db,
+        collection,
+        embeddingField,
+        query,
+        queryEmbedding,
+        minSimilarity = 0,
+        limit,
+        includeEmbedding = false
+      } = body;
+      const _queryEmbedding = queryEmbedding ?? (await ai.createEmbedding(query))[0];
 
       if (connection.type === "kai") {
-        const queryBuffer = ai.embeddingToBuffer(queryEmbedding);
+        const queryBuffer = ai.embeddingToBuffer(_queryEmbedding);
 
         const query: AggregateQuery = [
           { $addFields: { similarity: { $dotProduct: [`$${embeddingField}`, queryBuffer] } } }
@@ -36,7 +45,7 @@ export const vectorSearchController = <T extends Connection>(connection: T, ai: 
         const tablePath = connection.tablePath(collection, db);
 
         let query = `
-          SELECT *, DOT_PRODUCT(${embeddingField}, JSON_ARRAY_PACK('[${queryEmbedding}]')) AS similarity
+          SELECT *, DOT_PRODUCT(${embeddingField}, JSON_ARRAY_PACK('[${_queryEmbedding}]')) AS similarity
           FROM ${tablePath}
           WHERE similarity > ${minSimilarity}
           ORDER BY similarity DESC
