@@ -25,8 +25,11 @@ export type CreateEmbedding = (...args: CreateEmbeddingArgs) => Promise<CreateEm
 // ChatCompletion
 export type ChatCompletion = string;
 
-export type ChatCompletionMessage = Pick<ChatCompletionMessageParam, "content" | "name" | "function_call"> & {
+export type ChatCompletionMessage = {
   role: (string & {}) | ChatCompletionMessageParam["role"];
+  content: ChatCompletionMessageParam["content"];
+  name?: ChatCompletionMessageParam["name"];
+  function_call?: ChatCompletionMessageParam["function_call"];
 };
 
 export type CreateChatCompletionParams = {
