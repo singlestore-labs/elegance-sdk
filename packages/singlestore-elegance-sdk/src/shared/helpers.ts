@@ -10,14 +10,22 @@ export function isDefaultError(value: any): value is DefaultError {
 }
 
 export function handleError(error: any, status = 500): DefaultError {
-  let message = "Undefined error";
+  let message = "";
 
-  if (error instanceof Error) {
+  if ("message" in error && error.message) {
     message = error.message;
   }
 
-  if ("sqlMessage" in error) {
-    message = error.sqlMessage ?? error.message;
+  if ("sqlMessage" in error && error.sqlMessage) {
+    message = error.sqlMessage;
+  }
+
+  if (!message && error.code) {
+    message = error.code;
+  }
+
+  if (!message) {
+    message = "Undefined error";
   }
 
   return { status, message };
