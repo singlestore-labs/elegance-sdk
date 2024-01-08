@@ -21,7 +21,7 @@ export function createMySQLConnection(config: MySQLConnectionConfig): MySQLConne
     return typeof _dbName === "string" && _dbName.length ? `${_dbName}.${table}` : table;
   };
 
-  const pool = createPool(_config).promise();
+  const pool = createPool({ ..._config, database }).promise();
 
   return Object.assign(pool, {
     type: "mysql",
