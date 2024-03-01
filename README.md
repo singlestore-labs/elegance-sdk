@@ -1,5 +1,7 @@
 # SingleStore Elegance SDK
 
+**Attention**: The code in this repository is intended for experimental use only and is not fully tested, documented, or supported by SingleStore. Visit the [SingleStore Forums](https://www.singlestore.com/forum/) to ask questions about this repository.
+
 The Elegance SDK is an SDK for quickly building real-time AI full-stack JavaScript applications using SingleStoreDB with support for MySQL and Kai (support for Mongo APIs) connection types and the OpenAI API. It provides a set of ready-made tools for implementing various types of functionality when you need to transact, analyze, and contextualize data in real-time or build real-time AI apps.
 
 ## Features
