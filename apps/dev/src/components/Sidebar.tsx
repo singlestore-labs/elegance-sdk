@@ -17,10 +17,13 @@ const links: { href: string; children: ReactNode }[] = [
   { href: "/findMany", children: "Find many" },
   { href: "/createEmbedding", children: "Create embedding" },
   { href: "/createFileEmbeddings", children: "Create file embeddings" },
-  { href: "/createAndInsertFileEmbeddings", children: "Create and insert file embeddings" },
+  {
+    href: "/createAndInsertFileEmbeddings",
+    children: "Create and insert file embeddings",
+  },
   { href: "/createChatCompletion", children: "Create chat completion" },
   { href: "/searchChatCompletion", children: "Search chat completion" },
-  { href: "/vectorSearch", children: "Vector search" }
+  { href: "/dotProductSearch", children: "Dot product search" },
 ];
 
 export function Sidebar({ className, ...props }: SidebarProps) {
@@ -31,7 +34,7 @@ export function Sidebar({ className, ...props }: SidebarProps) {
       <h1 className="p-2 px-4 text-xl font-bold">SignleStore Elegance SDK</h1>
 
       <nav className="mt-8 flex flex-col">
-        {links.map(link => {
+        {links.map((link) => {
           const isActive = link.href === pathname;
 
           return (

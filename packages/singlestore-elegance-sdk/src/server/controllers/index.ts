@@ -11,7 +11,7 @@ import { insertManyController } from "./insertMany";
 import { insertOneController } from "./insertOne";
 import { queryController } from "./query";
 import { updateManyController } from "./updateMany";
-import { vectorSearchController } from "./vectorSearch";
+import { dotProductSearchController } from "./dotProductSearch";
 import { searchChatCompletionController } from "./searchChatCompletion";
 
 export function createControllers<T extends Connection>(connection: T, ai: AI) {
@@ -25,9 +25,12 @@ export function createControllers<T extends Connection>(connection: T, ai: AI) {
     query: queryController(connection),
     createEmbedding: createEmbeddingController(ai),
     createFileEmbeddings: createFileEmbeddingsController(ai),
-    createAndInsertFileEmbeddings: createAndInsertFileEmbeddingsController(connection, ai),
+    createAndInsertFileEmbeddings: createAndInsertFileEmbeddingsController(
+      connection,
+      ai
+    ),
     createChatCompletion: createChatCompletionController(ai),
     searchChatCompletion: searchChatCompletionController(connection, ai),
-    vectorSearch: vectorSearchController(connection, ai)
+    dotProductSearch: dotProductSearchController(connection, ai),
   };
 }

@@ -7,10 +7,15 @@ import type {
   BulkWriteOptions as MongoBulkWriteOptions,
   OptionalUnlessRequiredId as MongoOptionalUnlessRequiredId,
   InsertOneOptions as MongoInsertOneOptions,
-  AggregateOptions as MongoAggregateOptions
+  AggregateOptions as MongoAggregateOptions,
 } from "mongodb";
 
-import type { Embedding, CreateEmbeddingArgs, CreateChatCompletionArgs, CreateChatCompletionResult } from "./ai";
+import type {
+  Embedding,
+  CreateEmbeddingArgs,
+  CreateChatCompletionArgs,
+  CreateChatCompletionResult,
+} from "./ai";
 
 export type {
   MongoFilter,
@@ -21,7 +26,7 @@ export type {
   MongoBulkWriteOptions,
   MongoOptionalUnlessRequiredId,
   MongoInsertOneOptions,
-  MongoAggregateOptions
+  MongoAggregateOptions,
 };
 
 export type AggregateQuery = Record<any, any>[];
@@ -34,7 +39,11 @@ type WithDb<T extends object> = Omit<T, "db" | "collection"> & {
   collection: string;
 };
 
-type ByConnection<T extends object, K extends object = object, M extends object = object> = {
+type ByConnection<
+  T extends object,
+  K extends object = object,
+  M extends object = object
+> = {
   kai: WithDb<T & K>;
   mysql: WithDb<T & M>;
 };
@@ -49,40 +58,43 @@ export type QueryBody = {
 };
 
 export type InsertOneResult<T = any> = T;
-export type InsertOneBody<T extends InsertOneResult = InsertOneResult> = ByConnection<
-  { generateId?: boolean },
-  {
-    value: MongoOptionalUnlessRequiredId<T>;
-    options?: MongoInsertOneOptions;
-  },
-  { value: T }
->;
+export type InsertOneBody<T extends InsertOneResult = InsertOneResult> =
+  ByConnection<
+    { generateId?: boolean },
+    {
+      value: MongoOptionalUnlessRequiredId<T>;
+      options?: MongoInsertOneOptions;
+    },
+    { value: T }
+  >;
 
 export type InsertManyResult<T extends any[] = any[]> = T;
-export type InsertManyBody<T extends InsertManyResult = InsertManyResult> = ByConnection<
-  { generateId?: boolean },
-  {
-    values: MongoOptionalUnlessRequiredId<T[number]>[];
-    options?: MongoBulkWriteOptions;
-  },
-  { values: T }
->;
+export type InsertManyBody<T extends InsertManyResult = InsertManyResult> =
+  ByConnection<
+    { generateId?: boolean },
+    {
+      values: MongoOptionalUnlessRequiredId<T[number]>[];
+      options?: MongoBulkWriteOptions;
+    },
+    { values: T }
+  >;
 
 export type UpdateManyResult<T extends any[] = any[]> = T;
-export type UpdateManyBody<T extends UpdateManyResult = UpdateManyResult> = ByConnection<
-  {},
-  {
-    filter: MongoFilter<T[number]>;
-    update: MongoUpdateFilter<T[number]>;
-    options?: MongoUpdateOptions;
-    updatedFilter?: MongoFilter<T[number]>;
-  },
-  {
-    where: MySQLWhere;
-    set: MySQLSet;
-    updatedWhere?: MySQLWhere;
-  }
->;
+export type UpdateManyBody<T extends UpdateManyResult = UpdateManyResult> =
+  ByConnection<
+    {},
+    {
+      filter: MongoFilter<T[number]>;
+      update: MongoUpdateFilter<T[number]>;
+      options?: MongoUpdateOptions;
+      updatedFilter?: MongoFilter<T[number]>;
+    },
+    {
+      where: MySQLWhere;
+      set: MySQLSet;
+      updatedWhere?: MySQLWhere;
+    }
+  >;
 
 export type DeleteManyResult = { message: string };
 export type DeleteManyBody<T extends any = any> = ByConnection<
@@ -99,15 +111,25 @@ export type FindOneBody<T extends FindOneResult = FindOneResult> = ByConnection<
 >;
 
 export type FindManyResult<T extends any[] = any[]> = T;
-export type FindManyBody<T extends FindManyResult = FindManyResult> = ByConnection<
-  {},
-  { filter?: MongoFilter<T[number]>; options?: MongoFindOptions },
-  { columns?: string[]; where?: MySQLWhere; skip?: number; limit?: number; extra?: string }
->;
+export type FindManyBody<T extends FindManyResult = FindManyResult> =
+  ByConnection<
+    {},
+    { filter?: MongoFilter<T[number]>; options?: MongoFindOptions },
+    {
+      columns?: string[];
+      where?: MySQLWhere;
+      skip?: number;
+      limit?: number;
+      extra?: string;
+    }
+  >;
 
 export type CreateEmbeddingBody = { input: CreateEmbeddingArgs[0] };
 
-export type CreateFileEmbeddingsResult = { text: string; embedding: Embedding }[];
+export type CreateFileEmbeddingsResult = {
+  text: string;
+  embedding: Embedding;
+}[];
 export type CreateFileEmbeddingsBody = {
   dataURL: string;
   textField?: string;
@@ -116,7 +138,8 @@ export type CreateFileEmbeddingsBody = {
 };
 
 export type CreateAndInsertFileEmbeddingsResult = CreateFileEmbeddingsResult;
-export type CreateAndInsertFileEmbeddingsBody = WithDb<CreateFileEmbeddingsBody>;
+export type CreateAndInsertFileEmbeddingsBody =
+  WithDb<CreateFileEmbeddingsBody>;
 
 export type CreateChatCompletionBody = CreateChatCompletionArgs[0];
 
@@ -134,8 +157,8 @@ export type SearchChatCompletionBody = WithDb<
   } & Omit<CreateChatCompletionBody, "prompt">
 >;
 
-export type VectorSearchResult = any[];
-export type VectorSearchBody = WithDb<{
+export type DotProductSearchResult = any[];
+export type DotProductSearchBody = WithDb<{
   query: string;
   queryEmbedding?: Embedding;
   embeddingField: string;
