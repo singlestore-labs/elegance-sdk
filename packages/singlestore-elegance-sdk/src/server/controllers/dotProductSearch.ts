@@ -1,9 +1,19 @@
-import type { Connection, VectorSearchResult, VectorSearchBody, AggregateQuery } from "../../shared/types";
+import type {
+  Connection,
+  DotProductSearchResult,
+  DotProductSearchBody,
+  AggregateQuery,
+} from "../../shared/types";
 import type { AI } from "../ai";
 import { handleError } from "../../shared/helpers";
 
-export const vectorSearchController = <T extends Connection>(connection: T, ai: AI) => {
-  return async <R extends VectorSearchResult = VectorSearchResult>(body: VectorSearchBody): Promise<R> => {
+export const dotProductSearchController = <T extends Connection>(
+  connection: T,
+  ai: AI
+) => {
+  return async <R extends DotProductSearchResult = DotProductSearchResult>(
+    body: DotProductSearchBody
+  ): Promise<R> => {
     try {
       let result: any = undefined;
 
@@ -15,15 +25,20 @@ export const vectorSearchController = <T extends Connection>(connection: T, ai: 
         queryEmbedding,
         minSimilarity = 0,
         limit,
-        includeEmbedding = false
+        includeEmbedding = false,
       } = body;
-      const _queryEmbedding = queryEmbedding ?? (await ai.createEmbedding(query))[0];
+      const _queryEmbedding =
+        queryEmbedding ?? (await ai.createEmbedding(query))[0];
 
       if (connection.type === "kai") {
         const queryBuffer = ai.embeddingToBuffer(_queryEmbedding);
 
         const query: AggregateQuery = [
-          { $addFields: { similarity: { $dotProduct: [`$${embeddingField}`, queryBuffer] } } }
+          {
+            $addFields: {
+              similarity: { $dotProduct: [`$${embeddingField}`, queryBuffer] },
+            },
+          },
         ];
 
         if (!includeEmbedding) {
@@ -40,7 +55,11 @@ export const vectorSearchController = <T extends Connection>(connection: T, ai: 
           query.push({ $limit: limit });
         }
 
-        result = await connection.db(db).collection(collection).aggregate(query).toArray();
+        result = await connection
+          .db(db)
+          .collection(collection)
+          .aggregate(query)
+          .toArray();
       } else {
         const tablePath = connection.tablePath(collection, db);
 
@@ -58,7 +77,7 @@ export const vectorSearchController = <T extends Connection>(connection: T, ai: 
         const _result = (await connection.execute(query))[0] as any[];
 
         if (!includeEmbedding) {
-          result = _result.map(i => {
+          result = _result.map((i) => {
             delete i[embeddingField];
             return i;
           });

@@ -4,7 +4,7 @@ The Elegance SDK is an SDK for quickly building real-time AI full-stack JavaScri
 
 ## Features
 
-- Vector search
+- Dot product search
 - Chat completions
 - File embeddings generation (csv, pdf)
 - SQL and aggregate queries
@@ -114,7 +114,7 @@ app.listen(4000, () => {
 import { createEleganceClient } from "@singlestore/elegance-sdk";
 
 export const eleganceClient = createEleganceClient("mysql", {
-  baseURL: "http://localhost:4000"
+  baseURL: "http://localhost:4000",
 });
 ```
 
@@ -125,7 +125,10 @@ import { useEffect } from "react";
 import { eleganceClient } from "@/services/eleganceClient";
 
 export function ExampleComponent() {
-  const query = eleganceClient.hooks.useQuery<{ name: string }[]>({ initialValue: [], initialIsLoading: true });
+  const query = eleganceClient.hooks.useQuery<{ name: string }[]>({
+    initialValue: [],
+    initialIsLoading: true,
+  });
   const { execute: executeQuery } = query;
 
   useEffect(() => {
@@ -136,7 +139,7 @@ export function ExampleComponent() {
 
   return (
     <div>
-      {query.value.map(item => (
+      {query.value.map((item) => (
         <h4 key={item.name}>{item.name}</h4>
       ))}
     </div>
@@ -489,7 +492,7 @@ string | null;
 
 #### eleganceServerClient.controllers.searchChatCompletion
 
-Accepts a prompt, performs vector search, and creates chat completion for the found records.
+Accepts a prompt, performs dot product search, and creates chat completion for the found records.
 
 **Parameters:**
 
@@ -519,9 +522,9 @@ body: {
 }
 ```
 
-#### eleganceServerClient.controllers.vectorSearch
+#### eleganceServerClient.controllers.dotProductSearch
 
-Performs vector search in the collection based on the query.
+Performs dot product search in the collection based on the query.
 
 **Parameters:**
 
@@ -639,7 +642,11 @@ Clean functions to make requests to the server. They can be used anywhere within
 Ready-to-use React.js hooks with state handlers that use requests. Each hook has the following type:
 
 ```tsx
-<R = any,>(options?: { initialValue?: R; initialIsLoading?: boolean; onError?: (error: DefaultError) => void }) => {
+<R = any,>(options?: {
+  initialValue?: R;
+  initialIsLoading?: boolean;
+  onError?: (error: DefaultError) => void;
+}) => {
   value: R | undefined;
   error: DefaultError | undefined;
   isLoading: boolean;

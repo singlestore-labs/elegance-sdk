@@ -4,7 +4,7 @@ import type {
   FindOneResult,
   QueryResult,
   CreateAndInsertFileEmbeddingsResult,
-  VectorSearchResult,
+  DotProductSearchResult,
   SearchChatCompletionResult,
   InsertOneResult,
   InsertManyResult,
@@ -12,46 +12,68 @@ import type {
   DeleteManyResult,
   CreateEmbeddingResult,
   CreateFileEmbeddingsResult,
-  CreateChatCompletionResult
+  CreateChatCompletionResult,
 } from "../../shared/types";
 import { createRequests } from "../requests";
 import { UseRequestOptions, useRequest } from "./useRequest";
 
-export function createHooks<T extends ConnectionTypes>(requests: ReturnType<typeof createRequests<T>>) {
+export function createHooks<T extends ConnectionTypes>(
+  requests: ReturnType<typeof createRequests<T>>
+) {
   return {
-    useInsertOne: <R extends InsertOneResult = InsertOneResult>(options?: UseRequestOptions<R>) => {
+    useInsertOne: <R extends InsertOneResult = InsertOneResult>(
+      options?: UseRequestOptions<R>
+    ) => {
       return useRequest(requests.insertOne<R>, options);
     },
 
-    useInsertMany: <R extends InsertManyResult = InsertManyResult>(options?: UseRequestOptions<R>) => {
+    useInsertMany: <R extends InsertManyResult = InsertManyResult>(
+      options?: UseRequestOptions<R>
+    ) => {
       return useRequest(requests.insertMany<R>, options);
     },
 
-    useUpdateMany: <R extends UpdateManyResult = UpdateManyResult>(options?: UseRequestOptions<R>) => {
+    useUpdateMany: <R extends UpdateManyResult = UpdateManyResult>(
+      options?: UseRequestOptions<R>
+    ) => {
       return useRequest(requests.updateMany<R>, options);
     },
 
-    useDeleteMany: <K extends any = any>(options?: UseRequestOptions<DeleteManyResult>) => {
+    useDeleteMany: <K extends any = any>(
+      options?: UseRequestOptions<DeleteManyResult>
+    ) => {
       return useRequest(requests.deleteMany<K>, options);
     },
 
-    useFindOne: <R extends FindOneResult = FindOneResult>(options?: UseRequestOptions<R>) => {
+    useFindOne: <R extends FindOneResult = FindOneResult>(
+      options?: UseRequestOptions<R>
+    ) => {
       return useRequest(requests.findOne<R>, options);
     },
 
-    useFindMany: <R extends FindManyResult = FindManyResult>(options?: UseRequestOptions<R>) => {
+    useFindMany: <R extends FindManyResult = FindManyResult>(
+      options?: UseRequestOptions<R>
+    ) => {
       return useRequest(requests.findMany<R>, options);
     },
 
-    useQuery: <R extends QueryResult = QueryResult>(options?: UseRequestOptions<R>) => {
+    useQuery: <R extends QueryResult = QueryResult>(
+      options?: UseRequestOptions<R>
+    ) => {
       return useRequest(requests.query<R>, options);
     },
 
-    useCreateEmbedding: <R extends CreateEmbeddingResult = CreateEmbeddingResult>(options?: UseRequestOptions<R>) => {
+    useCreateEmbedding: <
+      R extends CreateEmbeddingResult = CreateEmbeddingResult
+    >(
+      options?: UseRequestOptions<R>
+    ) => {
       return useRequest(requests.createEmbedding<R>, options);
     },
 
-    useCreateFileEmbeddings: <R extends CreateFileEmbeddingsResult = CreateFileEmbeddingsResult>(
+    useCreateFileEmbeddings: <
+      R extends CreateFileEmbeddingsResult = CreateFileEmbeddingsResult
+    >(
       options?: UseRequestOptions<R>
     ) => {
       return useRequest(requests.createFileEmbeddings<R>, options);
@@ -65,20 +87,28 @@ export function createHooks<T extends ConnectionTypes>(requests: ReturnType<type
       return useRequest(requests.createAndInsertFileEmbeddings<R>, options);
     },
 
-    useCreateChatCompletion: <R extends CreateChatCompletionResult = CreateChatCompletionResult>(
+    useCreateChatCompletion: <
+      R extends CreateChatCompletionResult = CreateChatCompletionResult
+    >(
       options?: UseRequestOptions<R>
     ) => {
       return useRequest(requests.createChatCompletion<R>, options);
     },
 
-    useSearchChatCompletion: <R extends SearchChatCompletionResult = SearchChatCompletionResult>(
+    useSearchChatCompletion: <
+      R extends SearchChatCompletionResult = SearchChatCompletionResult
+    >(
       options?: UseRequestOptions<R>
     ) => {
       return useRequest(requests.searchChatCompletion<R>, options);
     },
 
-    useVectorSearch: <R extends VectorSearchResult = VectorSearchResult>(options?: UseRequestOptions<R>) => {
-      return useRequest(requests.vectorSearch<R>, options);
-    }
+    useDotProductSearch: <
+      R extends DotProductSearchResult = DotProductSearchResult
+    >(
+      options?: UseRequestOptions<R>
+    ) => {
+      return useRequest(requests.dotProductSearch<R>, options);
+    },
   };
 }
