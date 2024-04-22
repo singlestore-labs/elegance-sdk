@@ -19,8 +19,12 @@ export const insertOneController = <T extends Connection>(connection: T) => {
         const tablePath = connection.tablePath(collection, db);
         if (generateId) value.id = new ObjectId().toString();
         const { query, valuesToInsert } = toInsertValuesQuery(tablePath, value);
-        await connection.query(query, [valuesToInsert]);
-        result = value;
+        const _result = await connection.query(query, [valuesToInsert]);
+        if (Array.isArray(_result) && typeof _result[0] === 'object' && _result[0] !== null && 'insertId' in _result[0]) {
+          result = { id: _result[0].insertId, ...value };
+        } else {
+          result = value;
+        }
       }
 
       return result;
