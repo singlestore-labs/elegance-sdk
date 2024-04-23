@@ -1,16 +1,14 @@
 import { MongoClient } from "mongodb";
 import type { KaiConnection, KaiConnectionConfig } from "../../shared/types";
 
-export function createKaiConnection(config: KaiConnectionConfig): KaiConnection {
-  if (!config.uri) {
-    throw new Error("Kai URI is undefined");
-  }
-
+export function createKaiConnection(
+  config: KaiConnectionConfig
+): KaiConnection {
   const { uri, database, ...options } = config;
 
   const client = new MongoClient(uri, options);
 
-  const db: KaiConnection["db"] = dbName => {
+  const db: KaiConnection["db"] = (dbName) => {
     return client.db(dbName || database || "");
   };
 
@@ -18,6 +16,6 @@ export function createKaiConnection(config: KaiConnectionConfig): KaiConnection 
     type: "kai",
     dbName: database,
     client,
-    db
+    db,
   };
 }
